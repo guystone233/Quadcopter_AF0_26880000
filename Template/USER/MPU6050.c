@@ -1,0 +1,39 @@
+#include "stm32f4xx.h"                  // Device header
+#include "i2c.h"
+#include "delay.h"
+
+void MPU_Init2()
+{
+	I2C_Send_Byte(0xD0,0x6B,0x00);
+	I2C_Send_Byte(0xD0,0x19,0x00);
+	I2C_Send_Byte(0xD0,0x1A,0x06);
+	I2C_Send_Byte(0xD0,0x1B,0x18);
+	I2C_Send_Byte(0xD0,0x1C,0x00);
+}
+
+
+void MPU_Init()//初始化MPU
+{
+	I2C_Send_Byte(0xD0,0x6B,0x80);//复位
+	//延迟100毫秒
+	mydelay(100);
+	I2C_Send_Byte(0xD0,0x6B,0x01);//唤醒，选时钟源
+	I2C_Send_Byte(0xD0,0x6C,0x00);//不需要待机和低功耗
+	I2C_Send_Byte(0xD0,0x38,0x00);//禁止中断
+	I2C_Send_Byte(0xD0,0x19,0x00);//低通滤波不分频
+	I2C_Send_Byte(0xD0,0x1A,0x04);
+	I2C_Send_Byte(0xD0,0x1B,0x18);//设置角度量程
+	I2C_Send_Byte(0xD0,0x1C,0x08);
+	
+	
+
+}	
+
+uint16_t MPU_dataout(uint8_t readaddr1,uint8_t readaddr2)
+{
+	uint16_t data=0x0000;
+	data |= I2C_Read_Byte(0xD0,readaddr1);
+	data = data<<8;
+	data |= I2C_Read_Byte(0xD0,readaddr2);
+	return data;
+}
