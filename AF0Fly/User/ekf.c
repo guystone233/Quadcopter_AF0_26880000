@@ -11,7 +11,7 @@ R: 观测噪声矩阵R，6*6
 Z_k: 观测向量，[ax ay az mx my mz]' , 6*1
 K: kalman增益矩阵，7*6
 */
-#define SKIP_MAG_CALIBRATION
+// #define SKIP_MAG_CALIBRATION
 #define SendString_serial(x) SendString(x)
 // #define SendString_serial(x) SendString("")
 EKF_input *EKF_in;
@@ -257,12 +257,13 @@ void h_k_func(arm_matrix_instance_f32 *x_k, arm_matrix_instance_f32 *h, float32_
     float32_t tmp_2q1q2_plus_2q0q3 = 2 * (x_k->pData[1] * x_k->pData[2] + x_k->pData[0] * x_k->pData[3]);
     float32_t tmp_1_minus_2q1q1_minus_2q2q2 = 1.0f - 2 * (x_k->pData[1] * x_k->pData[1] + x_k->pData[2] * x_k->pData[2]);
     float32_t tmp_2q2q3_minus_2q0q1 = 2 * (x_k->pData[2] * x_k->pData[3] - x_k->pData[0] * x_k->pData[1]);
+    float32_t tmp_1_minus_2q1q1_minus_2q3q3 = 1.0f - 2 * (x_k->pData[1] * x_k->pData[1] + x_k->pData[3] * x_k->pData[3]);
     h->pData[0] = tmp_2q1q3_minus_2q0q2;
     h->pData[1] = tmp_2q2q3_plus_2q0q1;
     h->pData[2] = tmp_1_minus_2q1q1_minus_2q2q2;
     #ifndef SKIP_MAG_CALIBRATION
     h->pData[3] = bx * tmp_2q1q2_plus_2q0q3 + bz * tmp_2q1q3_minus_2q0q2;
-    h->pData[4] = bx * tmp_1_minus_2q1q1_minus_2q2q2 + bz * tmp_2q2q3_plus_2q0q1;
+    h->pData[4] = bx * tmp_1_minus_2q1q1_minus_2q3q3 + bz * tmp_2q2q3_plus_2q0q1;
     h->pData[5] = bx * tmp_2q2q3_minus_2q0q1 + bz * tmp_1_minus_2q1q1_minus_2q2q2;
     #endif
     #ifdef SKIP_MAG_CALIBRATION
@@ -289,14 +290,14 @@ void H_k_func(arm_matrix_instance_f32 *x_k, arm_matrix_instance_f32 *H_matrix, f
     Ha3 = 2 * (-x_k->pData[0]);
     Ha4 = 2 * (x_k->pData[1]);
     #ifndef SKIP_MAG_CALIBRATION
-    Hb1 = 2 * (bx * x_k->pData[0] - bz * x_k->pData[2]);
-    Hb2 = 2 * (bx * x_k->pData[1] + bz * x_k->pData[3]);
-    Hb3 = 2 * (-bx * x_k->pData[2] - bz * x_k->pData[0]);
-    Hb4 = 2 * (-bx * x_k->pData[3] + bz * x_k->pData[1]);
+    // Hb1 = 2 * (bx * x_k->pData[0] - bz * x_k->pData[2]);
+    // Hb2 = 2 * (bx * x_k->pData[1] + bz * x_k->pData[3]);
+    // Hb3 = 2 * (-bx * x_k->pData[2] - bz * x_k->pData[0]);
+    // Hb4 = 2 * (-bx * x_k->pData[3] + bz * x_k->pData[1]);
     Hb1 = 2 * (bx * x_k->pData[3] - bz * x_k->pData[2]);
     Hb2 = 2 * (bx * x_k->pData[2] + bz * x_k->pData[3]);
-    Hb3 = 2 * (-bx * x_k->pData[1] - bz * x_k->pData[0]);
-    Hb4 = 2 * (-bx * x_k->pData[0] + bz * x_k->pData[1]);
+    Hb3 = 2 * (bx * x_k->pData[1] - bz * x_k->pData[0]);
+    Hb4 = 2 * (bx * x_k->pData[0] + bz * x_k->pData[1]);
     #endif
     #ifdef SKIP_MAG_CALIBRATION
     Hb1 = Hb2 = Hb3 = Hb4 = 0;
@@ -373,16 +374,16 @@ void ekf_calculate(){
     for(int i = 0; i < 49; i++){
         F_k_data[i] = EKF_in -> f.pData[i];
     }
-    #ifndef SKIP_MAG_CALIBRATION
-    #define F(i) F_k.pData[i]
-    #define halfT EKF_in -> halfT
-    F(4) = halfT * x_prev_data[1]; F(5) = halfT * x_prev_data[2]; F(6) = halfT * x_prev_data[3];
-    F(11) = -halfT * x_prev_data[0]; F(12) = halfT * x_prev_data[3]; F(13) = -halfT * x_prev_data[2];
-    F(18) = -halfT * x_prev_data[3]; F(19) = -halfT * x_prev_data[0]; F(21) = halfT * x_prev_data[1];
-    F(25) = halfT * x_prev_data[2]; F(26) = -halfT * x_prev_data[1]; F(27) = -halfT * x_prev_data[0];
-    #undef F
-    #undef halfT
-    #endif
+    // #ifndef SKIP_MAG_CALIBRATION
+    // #define F(i) F_k.pData[i]
+    // #define halfT EKF_in -> halfT
+    // F(4) = halfT * x_prev_data[1]; F(5) = halfT * x_prev_data[2]; F(6) = halfT * x_prev_data[3];
+    // F(11) = -halfT * x_prev_data[0]; F(12) = halfT * x_prev_data[3]; F(13) = -halfT * x_prev_data[2];
+    // F(18) = -halfT * x_prev_data[3]; F(19) = -halfT * x_prev_data[0]; F(21) = halfT * x_prev_data[1];
+    // F(25) = halfT * x_prev_data[2]; F(26) = -halfT * x_prev_data[1]; F(27) = -halfT * x_prev_data[0];
+    // #undef F
+    // #undef halfT
+    // #endif
 
     // $P_k^- = F_k P_{k-1}^- F_k^T + Q$
     arm_mat_trans_f32(&F_k, &F_k);
@@ -405,6 +406,8 @@ void ekf_calculate(){
     quaternion_multiply(m_n[0],m_n[1],m_n[2],m_n[3],x_k_minus_data[0],x_k_minus_data[1],x_k_minus_data[2],x_k_minus_data[3],m_n);
     arm_sqrt_f32(m_n[1]*m_n[1]+m_n[2]*m_n[2],&bx);
     bz = m_n[3];
+    // print_var(bx,"bx");
+    // print_var(bz,"bz");
     h_k_func(&x_k_minus, &h_x_k, bx, bz);
     H_k_func(&x_k_minus, &H_k, bx, bz);
     K_func(&P_k_minus, &H_k, &(EKF_in -> R), &K_k);
