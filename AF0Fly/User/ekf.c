@@ -11,6 +11,7 @@ R: 观测噪声矩阵R，6*6
 Z_k: 观测向量，[ax ay az mx my mz]' , 6*1
 K: kalman增益矩阵，7*6
 */
+#define SKIP_MAG_CALIBRATION
 #define SendString_serial(x) SendString(x)
 // #define SendString_serial(x) SendString("")
 EKF_input *EKF_in;
@@ -202,20 +203,20 @@ void ekf_update() {
     magy = magy_raw * MAG_RATIO;
     magz = magz_raw * MAG_RATIO;
 
-    // ano_mpu_data -> data[0] = accx_raw & 0xff;
-    // ano_mpu_data -> data[1] = (accx_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[2] = accy_raw & 0xff;
-    // ano_mpu_data -> data[3] = (accy_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[4] = accz_raw & 0xff;
-    // ano_mpu_data -> data[5] = (accz_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[6] = gyrox_raw & 0xff;
-    // ano_mpu_data -> data[7] = (gyrox_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[8] = gyroy_raw & 0xff;
-    // ano_mpu_data -> data[9] = (gyroy_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[10] = gyroz_raw & 0xff;
-    // ano_mpu_data -> data[11] = (gyroz_raw >> 8) & 0xff;
-    // ano_mpu_data -> data[12] = 0;
-    // FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
+    ano_mpu_data -> data[0] = accx_raw & 0xff;
+    ano_mpu_data -> data[1] = (accx_raw >> 8) & 0xff;
+    ano_mpu_data -> data[2] = accy_raw & 0xff;
+    ano_mpu_data -> data[3] = (accy_raw >> 8) & 0xff;
+    ano_mpu_data -> data[4] = accz_raw & 0xff;
+    ano_mpu_data -> data[5] = (accz_raw >> 8) & 0xff;
+    ano_mpu_data -> data[6] = gyrox_raw & 0xff;
+    ano_mpu_data -> data[7] = (gyrox_raw >> 8) & 0xff;
+    ano_mpu_data -> data[8] = gyroy_raw & 0xff;
+    ano_mpu_data -> data[9] = (gyroy_raw >> 8) & 0xff;
+    ano_mpu_data -> data[10] = gyroz_raw & 0xff;
+    ano_mpu_data -> data[11] = (gyroz_raw >> 8) & 0xff;
+    ano_mpu_data -> data[12] = 0;
+    FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
 
     // print_var(gyrox, "gyrox");
     // print_var(gyroy, "gyroy");
@@ -259,12 +260,16 @@ void h_k_func(arm_matrix_instance_f32 *x_k, arm_matrix_instance_f32 *h, float32_
     h->pData[0] = tmp_2q1q3_minus_2q0q2;
     h->pData[1] = tmp_2q2q3_plus_2q0q1;
     h->pData[2] = tmp_1_minus_2q1q1_minus_2q2q2;
-    // h->pData[3] = bx * tmp_2q1q2_plus_2q0q3 + bz * tmp_2q1q3_minus_2q0q2;
-    // h->pData[4] = bx * tmp_1_minus_2q1q1_minus_2q2q2 + bz * tmp_2q2q3_plus_2q0q1;
-    // h->pData[5] = bx * tmp_2q2q3_minus_2q0q1 + bz * tmp_1_minus_2q1q1_minus_2q2q2;
+    #ifndef SKIP_MAG_CALIBRATION
+    h->pData[3] = bx * tmp_2q1q2_plus_2q0q3 + bz * tmp_2q1q3_minus_2q0q2;
+    h->pData[4] = bx * tmp_1_minus_2q1q1_minus_2q2q2 + bz * tmp_2q2q3_plus_2q0q1;
+    h->pData[5] = bx * tmp_2q2q3_minus_2q0q1 + bz * tmp_1_minus_2q1q1_minus_2q2q2;
+    #endif
+    #ifdef SKIP_MAG_CALIBRATION
     h->pData[3] = 1.0f;
     h->pData[4] = 1.0f;
     h->pData[5] = 1.0f;
+    #endif
     return;
 }
 
@@ -283,15 +288,19 @@ void H_k_func(arm_matrix_instance_f32 *x_k, arm_matrix_instance_f32 *H_matrix, f
     Ha2 = 2 * (x_k->pData[3]);
     Ha3 = 2 * (-x_k->pData[0]);
     Ha4 = 2 * (x_k->pData[1]);
-    // Hb1 = 2 * (bx * x_k->pData[0] - bz * x_k->pData[2]);
-    // Hb2 = 2 * (bx * x_k->pData[1] + bz * x_k->pData[3]);
-    // Hb3 = 2 * (-bx * x_k->pData[2] - bz * x_k->pData[0]);
-    // Hb4 = 2 * (-bx * x_k->pData[3] + bz * x_k->pData[1]);
-    // Hb1 = 2 * (bx * x_k->pData[3] - bz * x_k->pData[2]);
-    // Hb2 = 2 * (bx * x_k->pData[2] + bz * x_k->pData[3]);
-    // Hb3 = 2 * (-bx * x_k->pData[1] - bz * x_k->pData[0]);
-    // Hb4 = 2 * (-bx * x_k->pData[0] + bz * x_k->pData[1]);
+    #ifndef SKIP_MAG_CALIBRATION
+    Hb1 = 2 * (bx * x_k->pData[0] - bz * x_k->pData[2]);
+    Hb2 = 2 * (bx * x_k->pData[1] + bz * x_k->pData[3]);
+    Hb3 = 2 * (-bx * x_k->pData[2] - bz * x_k->pData[0]);
+    Hb4 = 2 * (-bx * x_k->pData[3] + bz * x_k->pData[1]);
+    Hb1 = 2 * (bx * x_k->pData[3] - bz * x_k->pData[2]);
+    Hb2 = 2 * (bx * x_k->pData[2] + bz * x_k->pData[3]);
+    Hb3 = 2 * (-bx * x_k->pData[1] - bz * x_k->pData[0]);
+    Hb4 = 2 * (-bx * x_k->pData[0] + bz * x_k->pData[1]);
+    #endif
+    #ifdef SKIP_MAG_CALIBRATION
     Hb1 = Hb2 = Hb3 = Hb4 = 0;
+    #endif
     #define H(i) H_matrix->pData[i]
     H(0) = Ha1; H(1) = Ha2; H(2) = Ha3; H(3) = Ha4;
     H(7) = Ha4; H(8) = -Ha3; H(9) = Ha2; H(10) = -Ha1;
@@ -364,14 +373,16 @@ void ekf_calculate(){
     for(int i = 0; i < 49; i++){
         F_k_data[i] = EKF_in -> f.pData[i];
     }
-    // #define F(i) F_k.pData[i]
-    // #define halfT EKF_in -> halfT
-    // F(4) = halfT * x_prev_data[1]; F(5) = halfT * x_prev_data[2]; F(6) = halfT * x_prev_data[3];
-    // F(11) = -halfT * x_prev_data[0]; F(12) = halfT * x_prev_data[3]; F(13) = -halfT * x_prev_data[2];
-    // F(18) = -halfT * x_prev_data[3]; F(19) = -halfT * x_prev_data[0]; F(21) = halfT * x_prev_data[1];
-    // F(25) = halfT * x_prev_data[2]; F(26) = -halfT * x_prev_data[1]; F(27) = -halfT * x_prev_data[0];
-    // #undef F
-    // #undef halfT
+    #ifndef SKIP_MAG_CALIBRATION
+    #define F(i) F_k.pData[i]
+    #define halfT EKF_in -> halfT
+    F(4) = halfT * x_prev_data[1]; F(5) = halfT * x_prev_data[2]; F(6) = halfT * x_prev_data[3];
+    F(11) = -halfT * x_prev_data[0]; F(12) = halfT * x_prev_data[3]; F(13) = -halfT * x_prev_data[2];
+    F(18) = -halfT * x_prev_data[3]; F(19) = -halfT * x_prev_data[0]; F(21) = halfT * x_prev_data[1];
+    F(25) = halfT * x_prev_data[2]; F(26) = -halfT * x_prev_data[1]; F(27) = -halfT * x_prev_data[0];
+    #undef F
+    #undef halfT
+    #endif
 
     // $P_k^- = F_k P_{k-1}^- F_k^T + Q$
     arm_mat_trans_f32(&F_k, &F_k);
