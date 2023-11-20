@@ -93,7 +93,7 @@ void GY86Task()
 	tmp = (int16_t)((data[6] << 8) + data[7]) * 10;
 	gyrox_read = (int16_t)((data[8] << 8) + data[9]);
 	gyroy_read = (int16_t)((data[10] << 8) + data[11]);
-	// gyroz_read = (int16_t)((data[12] << 8) + data[13]);
+	//gyroz_read = (int16_t)((data[12] << 8) + data[13]);
 	gyroz_read = (int16_t) I2C1_GetGyroZ();
 	
 	magx_read = (int16_t)((data[14] << 8) + data[15]);

@@ -32,7 +32,7 @@ void InitTask(void *p_arg)
 	GY86_Init();
 
 	OLED_Init();
-	Motor_Init();
+	MotorInit();
 	LED_Init();
 	ekf_init();
 

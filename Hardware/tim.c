@@ -1,78 +1,70 @@
+      
 #include "tim.h"
+//#include "delay.h"
 
+#define MotorLockOn 1
+#define MotorLockOff 0
+#define pulseWidth 20000
 // 定义全局变量，存储接收到的PPM数据
 volatile uint16_t ppmData[7], ppm_CCR1data[7];
-volatile uint16_t dutyCycleArray[6];
-uint16_t dutyCycle1;
-uint16_t dutyCycle2;
-uint16_t dutyCycle3;
-uint16_t dutyCycle4;
-uint16_t dutyCycle5;
-int16_t dutyCycle6;
+volatile uint16_t dutyCycleArray[7];
 
+uint8_t LockStatus = 0;
 uint8_t psc = 84 - 1;
 uint32_t arr = 0XFFFF;
+uint32_t CCR_1;
+uint32_t CCR2;
+
+/*标准遥控器接收机的频率均为50MHz,即周期为20ms,ppm将一个周期划分为10个channel,1个channel对应2ms的长度       */
+/*电调油门行程为1100us~1940us高电平,一个周期的长度为2000us,对应的占空比为5%~10%                            */
+/*我们使用的FS-i6遥控器及FS-iA6B,理论来讲有一共10个channel,这里我们对应的固件只输入了6个channel             */
+/*目前的遥控器Channel分布:                                                                                */
+/*低油门:摇杆向下或向左，旋钮逆时针旋转                                                                   */
+/*高油门:摇杆向上或向右，旋钮顺时针旋转                                                                   */
+/*CH1:右手摇杆左右                                                                                      */
+/*CH2:右手摇杆上下                                                                                      */
+/*CH3:左手摇杆上下                                                                                      */
+/*CH4:左手摇杆左右                                                                                      */
+/*CH5:顶部左旋钮                                                                                        */
+/*CH6:顶部右旋钮                                                                                        */
 
 void TIM3_IRQHandler(void)
 {
-	
+
     if (TIM3->SR & TIM_SR_CC1IF)
     {
-        static uint8_t ppmChannel = 0;
-        static uint32_t lastCapture = 0;
-        uint32_t CCR_1;
-        uint32_t CCR2;
+        uint8_t ppmChannel = 0;
+        uint32_t lastCapture = 0;
 
         TIM3->SR &= ~TIM_SR_CC1IF;
 
-        uint32_t timeout = 10000;
 
-        if (ppmChannel < 7)
-        {
-            // 检测到PPM帧起始信号，重置计数器
-            TIM3->CNT = 0;
-            while ((TIM3->SR & TIM_SR_CC1IF) == 0)
-            {
-                if (--timeout == 0)
-                {
-                    return;
-                }
-            }
-            if (TIM3->SR & TIM_SR_CC1IF)
-            {
-                TIM3->SR &= ~TIM_SR_CC1IF;
-                CCR_1 = TIM3->CCR1;
-                CCR2 = TIM3->CCR2;
-
+				// 检测到PPM帧起始信号，重置计数器
                 // 计算两次捕获之间的时间差，得到PPM脉冲宽度
 
-                if (TIM3->CCR2 > 0x1500)
+                if (TIM3->CCR1 > 0x1000)
                 {
-                    TIM3->SR &= ~TIM_SR_CC1IF;
-                    ppmChannel = 1;
-                    ppm_CCR1data[ppmChannel - 1] = CCR_1;
-                    ppmData[ppmChannel - 1] = CCR2;
+//                    TIM3->SR &= ~TIM_SR_CC1IF;
+                    ppm_CCR1data[ppmChannel] = TIM3->CCR1;
+                    ppmData[ppmChannel] = TIM3->CCR2;
                     TIM3->CNT = 0;
-                    ppmChannel++;
-                    while ((TIM3->SR & TIM_SR_CC1IF) == 0)
-                        ;
-                    for (int i = 0; i < 6; i++)
+
+                    for (int i = 1; i < 7; i++)
                     {
-                        if (TIM3->CCR2 > 0x1500)
-                            break;
+
                         while ((TIM3->SR & TIM_SR_CC1IF) == 0)
                             ;
                         TIM3->SR &= ~TIM_SR_CC1IF;
                         CCR_1 = TIM3->CCR1;
                         CCR2 = TIM3->CCR2;
-                        ppm_CCR1data[ppmChannel - 1] = CCR_1;
-                        ppmData[ppmChannel - 1] = CCR2;
+                        ppm_CCR1data[i] = TIM3->CCR1;
+                        ppmData[i] = TIM3->CCR2;
                         TIM3->CNT = 0;
                         ppmChannel++;
                     }
                 }
-            }
-        }
+
+//        }
         ppmChannel++;
         if (ppmChannel > 7)
         {
@@ -101,8 +93,6 @@ void TIM1_PWM_Init(void)
     // 配置TIM1基本参数
     TIM1->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
     TIM1->ARR = 3200 - 1; // PWM周期为20ms
-//		TIM1->PSC = 84 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
-//    TIM1->ARR = 20000 - 1; // PWM周期为20ms
 
     // 配置TIM1通道1~4为PWM输出模式
     // OC1~4设置PWM1模式
@@ -178,25 +168,18 @@ void TIM3_PPM_Init(void)
 }
 
 // 计算占空比（以百分比表示）
-int16_t calculateDutyCycle(uint16_t pulseWidth, uint16_t period)
+uint16_t calculateDutyCycle(uint16_t period)
 {
-    int16_t duty = (100 * pulseWidth) / period;
+    uint16_t duty = (100 * (period+1)) / pulseWidth;
     ;
-    duty = (5 * (duty - 60));
     return duty;
 }
 
 // 设置PWM输出占空比
-void setPWMDutyCycle(TIM_TypeDef *TIMx, uint32_t channel, uint16_t dutyCycle)
+void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle)
 {
-    if (dutyCycle > 70)
-    {
-        dutyCycle = (25 * (dutyCycle - 70)) / 10 + 75;
-    }
-    else
-        dutyCycle = 75 - ((25 * (70 - dutyCycle)) / 10);
-    uint16_t pulse = (dutyCycle * (TIMx->ARR + 1)) / 100;
-
+//    uint16_t pulse = (dutyCycle * (TIMx->ARR + 1)) / 100;
+    uint16_t pulse = dutyCycle;
     switch (channel)
     {
     case 1:
@@ -217,49 +200,83 @@ void setPWMDutyCycle(TIM_TypeDef *TIMx, uint32_t channel, uint16_t dutyCycle)
 }
 
 // 存储占空比数据到数组中
-void storeDutyCycle(int dutyCycle1, int dutyCycle2, int dutyCycle3, int dutyCycle4, int dutyCycle5, int dutyCycle6)
-{
-    dutyCycleArray[0] = dutyCycle1;
-    dutyCycleArray[1] = dutyCycle2;
-    dutyCycleArray[2] = dutyCycle3;
-    dutyCycleArray[3] = dutyCycle4;
-    dutyCycleArray[4] = dutyCycle5;
-    dutyCycleArray[5] = dutyCycle6;
-}
+
 
 void PWM_output(void)
 {
-
-    dutyCycle1 = calculateDutyCycle(ppmData[1], ppm_CCR1data[1]);
-    dutyCycle2 = calculateDutyCycle(ppmData[2], ppm_CCR1data[2]);
-    dutyCycle3 = calculateDutyCycle(ppmData[3], ppm_CCR1data[3]);
-    dutyCycle4 = calculateDutyCycle(ppmData[4], ppm_CCR1data[4]);
-    dutyCycle5 = calculateDutyCycle(ppmData[5], ppm_CCR1data[5]);
-    dutyCycle6 = calculateDutyCycle(ppmData[6], ppm_CCR1data[6]);
-
-    storeDutyCycle(dutyCycle1, dutyCycle2, dutyCycle3, dutyCycle4, dutyCycle5, dutyCycle6);
-
-    setPWMDutyCycle(TIM1, 1, dutyCycleArray[0]);
-    setPWMDutyCycle(TIM1, 2, dutyCycleArray[1]);
-    setPWMDutyCycle(TIM1, 3, dutyCycleArray[2]);
-    setPWMDutyCycle(TIM1, 4, dutyCycleArray[3]);
+		LockStatus = CheckMotorLock();
+#ifdef MOTOR_INIT
+		MotorInit();
+#endif
+		
+    StoreDutyCycle(dutyCycleArray, ppm_CCR1data);
+    if(!LockStatus)
+    {
+        for(uint8_t i = 1; i < 5; i++)
+        {
+            setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
+        }
+    }
 }
 
+/*用来初始化电机上电后校准步骤*/
+void MotorInit(void)
+{
+	if(LockStatus == 1)
+	{
+		if(CheckMotorInit())
+		{
+			for(uint8_t i = 1; i < 5; i++)
+			{
+					setPWMDutyCycle(TIM1, i, 1940);
+			}
+		}
+		else
+		{
+			for(uint8_t i = 1; i < 5; i++)
+			{
+					setPWMDutyCycle(TIM1, i, 1100);
+			}
+		}
+	}
+    
+}
+
+void StoreDutyCycle(uint16_t *dutyCycleArray, uint16_t *ppm_CCR1data)
+{
+    for(uint8_t i = 1; i < 7; i++)
+    {
+        dutyCycleArray[i] = calculateDutyCycle(ppm_CCR1data[i]);
+    }
+}
+
+uint8_t CheckMotorLock(void)
+{
+    if(dutyCycleArray[5] > 5)
+		{
+			LockStatus = 1;
+			return MotorLockOff;
+		}      
+    if((dutyCycleArray[5] == 5))
+		{
+				LockStatus = 0;
+				return MotorLockOn;
+		}
+}
+
+uint8_t CheckMotorInit(void)
+{
+	  if(dutyCycleArray[6] != 5)
+		{
+			return 1;
+		}
+		else return 0;
+}	
 void Tim_Init()
 {
     TIM1_PWM_Init();
     TIM3_PPM_Init();
+    
 }
 
-void Motor_Init()
-{
-	setPWMDutyCycle(TIM1, 1, 80);
-	setPWMDutyCycle(TIM1, 2, 80);
-	setPWMDutyCycle(TIM1, 3, 80);
-	setPWMDutyCycle(TIM1, 4, 80);
-
-	setPWMDutyCycle(TIM1, 1, 60);
-	setPWMDutyCycle(TIM1, 2, 60);
-	setPWMDutyCycle(TIM1, 3, 60);
-	setPWMDutyCycle(TIM1, 4, 60);
-}
+    
