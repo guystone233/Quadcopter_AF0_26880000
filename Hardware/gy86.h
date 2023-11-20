@@ -79,20 +79,22 @@
 #define OutputZLSB (uint8_t)0x08
 #define StatusRegister (uint8_t)0x09
 
-void MPU6050_Init(void);
+void GY86_Init(void);
 void HMC5883Init(void);
 
-int16_t I2C1_GetMPU6050X(void);
-int16_t I2C1_GetMPU6050Y(void);
-int16_t I2C1_GetMPU6050Z(void);
+void I2C1_GetAll(int8_t *data);
 
-int16_t I2C1_GetGyroX(void);
-int16_t I2C1_GetGyroY(void);
-int16_t I2C1_GetGyroZ(void);
+uint16_t I2C1_GetAccX(void);
+uint16_t I2C1_GetAccY(void);
+uint16_t I2C1_GetAccZ(void);
 
-int16_t I2C1_GetHMC5883X(void);
-int16_t I2C1_GetHMC5883Y(void);
-int16_t I2C1_GetHMC5883Z(void);
+uint16_t I2C1_GetGyroX(void);
+uint16_t I2C1_GetGyroY(void);
+uint16_t I2C1_GetGyroZ(void);
+
+uint16_t I2C1_GetMagX(void);
+uint16_t I2C1_GetMagY(void);
+uint16_t I2C1_GetMagZ(void);
 
 void GPIOB_I2C1_Init(uint8_t scl, uint8_t sda);
 void I2C1_Init(void);
