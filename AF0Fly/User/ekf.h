@@ -21,21 +21,20 @@
 #define ACC_OFFSET_X -2085+2048+230
 #define ACC_OFFSET_Y 46-9
 #define ACC_OFFSET_Z 192
-#define GYRO_OFFSET_X -56-8
-#define GYRO_OFFSET_Y -63-70
-#define GYRO_OFFSET_Z -8+5
+#define GYRO_OFFSET_X -56-8+3-7+2
+#define GYRO_OFFSET_Y -63-70-1
+#define GYRO_OFFSET_Z -8+5+1
 
 
 typedef struct EKF_input {
     arm_matrix_instance_f32 x_k_prev; // 先验状态估计
-    arm_matrix_instance_f32 A_k; // 旋转矩阵
+    arm_matrix_instance_f32 f; // 状态转移函数
+    arm_matrix_instance_f32 P_k_prev; // 先验状态协方差估计
+    arm_matrix_instance_f32 Q; // 先验过程噪声协方差估计
+    arm_matrix_instance_f32 R; // 观测噪声协方差矩阵R
+    arm_matrix_instance_f32 Z_k; // 观测量
     float32_t halfT; // 采样时间
 	INT32U tick_k_minus;
-    arm_matrix_instance_f32 P_k_prev; // 先验状态协方差估计
-    arm_matrix_instance_f32 Q_k_prev; // 先验过程噪声协方差估计
-    arm_matrix_instance_f32 R; // 观测噪声协方差矩阵R
-    arm_matrix_instance_f32 Z_1; // 观测向量1
-    arm_matrix_instance_f32 Z_2; // 观测向量2
 } EKF_input;
 
 typedef struct ANO_data {
