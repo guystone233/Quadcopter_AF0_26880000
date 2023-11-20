@@ -10,7 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARM_Compiler_5.06u7</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -184,6 +184,9 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
+            <RvdsMve>0</RvdsMve>
+            <RvdsCdeCp>0</RvdsCdeCp>
+            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -324,6 +327,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
             <v6LangP>5</v6LangP>
@@ -334,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32F401xx, USE_STDPERIPH_DRIVER,ARM_MATH_CM4</Define>
+              <Define>STM32F401xx, USE_STDPERIPH_DRIVER, ARM_MATH_CM4</Define>
               <Undefine></Undefine>
               <IncludePath>..\User;..\Lib\inc;..\Hardware;..\Ucosii\Source;..\Ucosii\Cfg\Template;..\Ucosii\Ports;..\Ucosii\Trace</IncludePath>
             </VariousControls>
@@ -349,7 +353,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <uClangAs>0</uClangAs>
+            <ClangAsOpt>1</ClangAsOpt>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -426,16 +430,6 @@
               <FilePath>..\User\tasks.h</FilePath>
             </File>
             <File>
-              <FileName>ekf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\ekf.c</FilePath>
-            </File>
-            <File>
-              <FileName>ekf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\User\ekf.h</FilePath>
-            </File>
-            <File>
               <FileName>ano.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\ano.c</FilePath>
@@ -444,6 +438,16 @@
               <FileName>ano.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\User\ano.h</FilePath>
+            </File>
+            <File>
+              <FileName>ekf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\ekf.c</FilePath>
+            </File>
+            <File>
+              <FileName>ekf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\User\ekf.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -787,6 +791,7 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
+                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -847,6 +852,7 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
+                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -975,16 +981,6 @@
         <Group>
           <GroupName>Hardware</GroupName>
           <Files>
-            <File>
-              <FileName>delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\delay.c</FilePath>
-            </File>
-            <File>
-              <FileName>delay.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Hardware\delay.h</FilePath>
-            </File>
             <File>
               <FileName>led.c</FileName>
               <FileType>1</FileType>
@@ -1183,14 +1179,14 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="CMSIS" Cgroup="DSP" Cvariant="Source" Cvendor="ARM" Cversion="1.14.4" condition="CMSISCORE">
-        <package license="LICENSE.txt" name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.4"/>
+      <component Cclass="CMSIS" Cgroup="DSP" Cvariant="Source" Cvendor="ARM" Cversion="1.14.2" condition="CMSISCORE">
+        <package name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.2"/>
         <targetInfos>
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="CMSIS" Cgroup="DSP" Csub="Compute Graph" Cvendor="ARM" Cversion="1.14.4" condition="CMSISDSPLIB">
-        <package license="LICENSE.txt" name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.4"/>
+      <component Cclass="CMSIS" Cgroup="DSP" Csub="Compute Graph Static Flow" Cvendor="ARM" Cversion="1.14.2" condition="CMSISDSPLIB">
+        <package name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.2"/>
         <targetInfos>
           <targetInfo name="Target 1"/>
         </targetInfos>
@@ -1198,5 +1194,14 @@
     </components>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>AF0Fly</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>

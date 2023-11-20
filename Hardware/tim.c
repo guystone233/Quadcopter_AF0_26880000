@@ -2,13 +2,13 @@
 
 // 定义全局变量，存储接收到的PPM数据
 volatile uint16_t ppmData[7], ppm_CCR1data[7];
-volatile int dutyCycleArray[6];
+volatile uint16_t dutyCycleArray[6];
 uint16_t dutyCycle1;
 uint16_t dutyCycle2;
 uint16_t dutyCycle3;
 uint16_t dutyCycle4;
 uint16_t dutyCycle5;
-int dutyCycle6;
+int16_t dutyCycle6;
 
 uint8_t psc = 84 - 1;
 uint32_t arr = 0XFFFF;
@@ -101,6 +101,8 @@ void TIM1_PWM_Init(void)
     // 配置TIM1基本参数
     TIM1->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
     TIM1->ARR = 3200 - 1; // PWM周期为20ms
+//		TIM1->PSC = 84 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
+//    TIM1->ARR = 20000 - 1; // PWM周期为20ms
 
     // 配置TIM1通道1~4为PWM输出模式
     // OC1~4设置PWM1模式
@@ -176,9 +178,9 @@ void TIM3_PPM_Init(void)
 }
 
 // 计算占空比（以百分比表示）
-int calculateDutyCycle(uint16_t pulseWidth, uint16_t period)
+int16_t calculateDutyCycle(uint16_t pulseWidth, uint16_t period)
 {
-    int duty = (100 * pulseWidth) / period;
+    int16_t duty = (100 * pulseWidth) / period;
     ;
     duty = (5 * (duty - 60));
     return duty;
@@ -247,4 +249,17 @@ void Tim_Init()
 {
     TIM1_PWM_Init();
     TIM3_PPM_Init();
+}
+
+void Motor_Init()
+{
+	setPWMDutyCycle(TIM1, 1, 80);
+	setPWMDutyCycle(TIM1, 2, 80);
+	setPWMDutyCycle(TIM1, 3, 80);
+	setPWMDutyCycle(TIM1, 4, 80);
+
+	setPWMDutyCycle(TIM1, 1, 60);
+	setPWMDutyCycle(TIM1, 2, 60);
+	setPWMDutyCycle(TIM1, 3, 60);
+	setPWMDutyCycle(TIM1, 4, 60);
 }

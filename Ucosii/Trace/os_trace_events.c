@@ -14,19 +14,19 @@
 void trace_task_create(OS_TCB *ptcb)
 {
     char str[100]={0};
-    // sprintf(str,"%d[task create]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
+    sprintf(str,"%d[task create]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
     SendString(str);
 }
 void trace_task_ready(OS_TCB *ptcb)
 {
     char str[100]={0};
-    // sprintf(str,"%d[task ready]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
+    sprintf(str,"%d[task ready]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
     SendString(str);
 }
 void trace_task_switched_in(OS_TCB *ptcb)
 {
     char str[100]={0};
-    // sprintf(str,"%d[task switched in]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
+    sprintf(str,"%d[task switched in]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
     SendString(str);
 }
 void trace_task_dly(uint32_t dly_ticks)
@@ -40,7 +40,7 @@ void trace_task_dly(uint32_t dly_ticks)
 void trace_task_suspend(OS_TCB *ptcb)
 {
     char str[100]={0};
-    // sprintf(str,"%d[task suspend]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
+    sprintf(str,"%d[task suspend]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
     SendString(str);
 }
 void trace_task_suspended(OS_TCB *ptcb)
@@ -52,6 +52,6 @@ void trace_task_suspended(OS_TCB *ptcb)
 void trace_task_resume(OS_TCB *ptcb)
 {
     char str[100]={0};
-    // sprintf(str,"%d[task resume]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
+    sprintf(str,"%d[task resume]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
     SendString(str);
 }
