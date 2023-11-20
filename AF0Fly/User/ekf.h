@@ -21,9 +21,9 @@
 #define ACC_OFFSET_X -2085+2048+230
 #define ACC_OFFSET_Y 46-9
 #define ACC_OFFSET_Z 192
-#define GYRO_OFFSET_X -56-8+3
-#define GYRO_OFFSET_Y -63-70
-#define GYRO_OFFSET_Z -8+5
+#define GYRO_OFFSET_X -56-8+3-7+2
+#define GYRO_OFFSET_Y -63-70-1
+#define GYRO_OFFSET_Z -8+5+1
 
 
 typedef struct EKF_input {

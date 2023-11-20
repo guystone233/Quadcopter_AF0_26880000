@@ -31,7 +31,8 @@ void Send_Quaternion_Data(){
 void Send_Euler_Data(){
     FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
 }
-void quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result){
+void quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result);
+void inline quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result){
     result[0] = q0 * r0 - q1 * r1 - q2 * r2 - q3 * r3;
     result[1] = q0 * r1 + q1 * r0 + q2 * r3 - q3 * r2;
     result[2] = q0 * r2 - q1 * r3 + q2 * r0 + q3 * r1;
@@ -135,10 +136,8 @@ void ekf_init (){
 
     // 初始化状态向量
     EKF_in->x_k_prev.pData[0] = 1.0f;
-    EKF_in->x_k_prev.pData[1] = EKF_in->x_k_prev.pData[2] = EKF_in->x_k_prev.pData[3] = 0.0f;
-    EKF_in->x_k_prev.pData[4] = GYRO_OFFSET_X * GYRO_RATIO;
-    EKF_in->x_k_prev.pData[5] = GYRO_OFFSET_Y * GYRO_RATIO;
-    EKF_in->x_k_prev.pData[6] = GYRO_OFFSET_Z * GYRO_RATIO;
+    // EKF_in->x_k_prev.pData[1] = EKF_in->x_k_prev.pData[2] = EKF_in->x_k_prev.pData[3] = 0.0f;
+    // EKF_in->x_k_prev.pData[4] = EKF_in->x_k_prev.pData[5] = EKF_in->x_k_prev.pData[6] = 0.0f;
 
     // 初始化状态协方差矩阵
     // EKF_in->P_k_prev.pData[0] = EKF_in->P_k_prev.pData[5] = EKF_in->P_k_prev.pData[10] = EKF_in->P_k_prev.pData[15] = 0.125f;
@@ -175,7 +174,7 @@ void ekf_init (){
     // free(EKF_in->R.pData);
     // EKF_in->R.pData = R;
     EKF_in -> tick_k_minus = OSTimeGet();
-    Send_Quaternion_Data();
+    // Send_Quaternion_Data();
 }
 void ekf_update() {
     int16_t accx_raw = 0, accy_raw = 0, accz_raw = 0;
@@ -196,27 +195,27 @@ void ekf_update() {
     accx = accx_raw * ACC_RATIO;
     accy = accy_raw * ACC_RATIO;
     accz = accz_raw * ACC_RATIO;
-    gyrox = gyrox_raw * GYRO_RATIO;
-    gyroy = gyroy_raw * GYRO_RATIO;
-    gyroz = gyroz_raw * GYRO_RATIO;
+    gyrox = gyrox_raw * GYRO_RATIO - EKF_in->x_k_prev.pData[4];
+    gyroy = gyroy_raw * GYRO_RATIO - EKF_in->x_k_prev.pData[5];
+    gyroz = gyroz_raw * GYRO_RATIO - EKF_in->x_k_prev.pData[6];
     magx = magx_raw * MAG_RATIO;
     magy = magy_raw * MAG_RATIO;
     magz = magz_raw * MAG_RATIO;
 
-    ano_mpu_data -> data[0] = accx_raw & 0xff;
-    ano_mpu_data -> data[1] = (accx_raw >> 8) & 0xff;
-    ano_mpu_data -> data[2] = accy_raw & 0xff;
-    ano_mpu_data -> data[3] = (accy_raw >> 8) & 0xff;
-    ano_mpu_data -> data[4] = accz_raw & 0xff;
-    ano_mpu_data -> data[5] = (accz_raw >> 8) & 0xff;
-    ano_mpu_data -> data[6] = gyrox_raw & 0xff;
-    ano_mpu_data -> data[7] = (gyrox_raw >> 8) & 0xff;
-    ano_mpu_data -> data[8] = gyroy_raw & 0xff;
-    ano_mpu_data -> data[9] = (gyroy_raw >> 8) & 0xff;
-    ano_mpu_data -> data[10] = gyroz_raw & 0xff;
-    ano_mpu_data -> data[11] = (gyroz_raw >> 8) & 0xff;
-    ano_mpu_data -> data[12] = 0;
-    FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
+    // ano_mpu_data -> data[0] = accx_raw & 0xff;
+    // ano_mpu_data -> data[1] = (accx_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[2] = accy_raw & 0xff;
+    // ano_mpu_data -> data[3] = (accy_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[4] = accz_raw & 0xff;
+    // ano_mpu_data -> data[5] = (accz_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[6] = gyrox_raw & 0xff;
+    // ano_mpu_data -> data[7] = (gyrox_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[8] = gyroy_raw & 0xff;
+    // ano_mpu_data -> data[9] = (gyroy_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[10] = gyroz_raw & 0xff;
+    // ano_mpu_data -> data[11] = (gyroz_raw >> 8) & 0xff;
+    // ano_mpu_data -> data[12] = 0;
+    // FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
 
     // print_var(gyrox, "gyrox");
     // print_var(gyroy, "gyroy");
@@ -238,6 +237,7 @@ void ekf_update() {
     normalize(3, &(EKF_in -> Z_k.pData[3]));
     EKF_in -> halfT = (float)(tick2 - EKF_in -> tick_k_minus) / (float)OS_TICKS_PER_SEC / 2.0f;
     EKF_in -> tick_k_minus = tick2;
+
     #define f(i) EKF_in -> f.pData[i]
     #define halfT EKF_in -> halfT
     f(0) = 1.0f; f(1) = -gyrox * halfT; f(2) = -gyroy * halfT; f(3) = -gyroz * halfT; f(4) = 0.0f; f(5) = 0.0f; f(6) = 0.0f;
@@ -435,6 +435,7 @@ void ekf_calculate(){
     }
 
     Send_Quaternion_Data();
+    // print_martix(&(EKF_in -> x_k_prev), "x_k_prev");
     return;
 
 }
