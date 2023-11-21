@@ -11,7 +11,7 @@ int8_t data[20] = {0};
 extern int dutyCycleArray[6];
 
 /* Delay */
-INT16U Task1000HZDelay = 2;
+INT16U Task1000HZDelay = 4;
 INT16U Task500HZDelay = 2;
 INT16U Task250HZDelay = 4;
 
@@ -118,7 +118,7 @@ void SendTask()
 {
 	INT32U tick1 = OSTimeGet();
 
-	FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
+	//FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
 	// FANO_Send_MAG(data);
 	FANO_Send_Data(Frame_Quaternion, (uint8_t *)ano_data);
 	// FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);

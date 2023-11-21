@@ -174,7 +174,7 @@ void ekf_init()
     for (int i = 0; i < 49; i++)
     {
         if (i % 8 == 0)
-            EKF_in->Q.pData[i] = 0.000001f;
+            EKF_in->Q.pData[i] = 0.0001f;
         else
             EKF_in->Q.pData[i] = 0.0f;
     }
@@ -185,7 +185,7 @@ void ekf_init()
     for (int i = 0; i < 36; i++)
     {
         if (i % 7 == 0)
-            EKF_in->R.pData[i] = 0.125f;
+            EKF_in->R.pData[i] = 0.2f;
         else
             EKF_in->R.pData[i] = 0.0f;
     }
