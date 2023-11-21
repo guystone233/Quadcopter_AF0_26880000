@@ -12,7 +12,7 @@ extern int dutyCycleArray[6];
 
 /* Delay */
 INT16U Task1000HZDelay = 4;
-INT16U Task500HZDelay = 2;
+INT16U Task500HZDelay = 4;
 INT16U Task250HZDelay = 4;
 
 // INT16U gy86_delay = 150;
@@ -215,7 +215,52 @@ void InnerLoopTask()
 {
 	INT32U tick1 = OSTimeGet();
 
-	// TODO: Inner Loop
+	// TODO: Inner Loop, angle speed control
+	int16_t pitch = (int16_t)(ano_data_euler->data[1] << 8) + ano_data_euler->data[2];
+	int16_t roll = (int16_t)(ano_data_euler->data[3] << 8) + ano_data_euler->data[4];
+	int16_t yaw = (int16_t)(ano_data_euler->data[5] << 8) + ano_data_euler->data[6];
+
+	int16_t kp = 0;
+	int16_t ki = 0;
+	int16_t kd = 0;
+
+	int16_t pitch_error = 0;
+	int16_t roll_error = 0;
+	int16_t yaw_error = 0;
+
+	int16_t pitch_error_sum = 0;
+	int16_t roll_error_sum = 0;
+	int16_t yaw_error_sum = 0;
+
+	int16_t pitch_error_diff = 0;
+	int16_t roll_error_diff = 0;
+	int16_t yaw_error_diff = 0;
+
+	int16_t pitch_output = 0;
+	int16_t roll_output = 0;
+	int16_t yaw_output = 0;
+
+
+	pitch_error = 0 - pitch;
+	roll_error = 0 - roll;
+	yaw_error = 0 - yaw;
+
+	pitch_error_sum += pitch_error;
+	roll_error_sum += roll_error;
+	yaw_error_sum += yaw_error;
+
+	pitch_error_diff = pitch_error - pitch_error_diff;
+	roll_error_diff = roll_error - roll_error_diff;
+	yaw_error_diff = yaw_error - yaw_error_diff;
+
+	pitch_output = kp * pitch_error + ki * pitch_error_sum + kd * pitch_error_diff;
+	roll_output = kp * roll_error + ki * roll_error_sum + kd * roll_error_diff;
+	yaw_output = kp * yaw_error + ki * yaw_error_sum + kd * yaw_error_diff;
+
+	// dutyCycleArray[0] = 1000 + pitch_output + roll_output + yaw_output;
+	// dutyCycleArray[1] = 1000 + pitch_output - roll_output - yaw_output;
+	// dutyCycleArray[2] = 1000 - pitch_output - roll_output + yaw_output;
+	// dutyCycleArray[3] = 1000 - pitch_output + roll_output - yaw_output;
 
 	INT32U tick2 = OSTimeGet();
 	inner_loop_time = tick2 - tick1;
@@ -255,7 +300,53 @@ void OuterLoopTask()
 {
 	INT32U tick1 = OSTimeGet();
 
-	// TODO: Outer Loop
+	// TODO: Outer Loop, angle control
+	// int16_t pitch = (int16_t)(ano_data_euler->data[1] << 8) + ano_data_euler->data[2];
+	// int16_t roll = (int16_t)(ano_data_euler->data[3] << 8) + ano_data_euler->data[4];
+	// int16_t yaw = (int16_t)(ano_data_euler->data[5] << 8) + ano_data_euler->data[6];
+
+	// int16_t kp = 0;
+	// int16_t ki = 0;
+	// int16_t kd = 0;
+
+	// int16_t pitch_error = 0;
+	// int16_t roll_error = 0;
+	// int16_t yaw_error = 0;
+
+	// int16_t pitch_error_sum = 0;
+	// int16_t roll_error_sum = 0;
+	// int16_t yaw_error_sum = 0;
+
+	// int16_t pitch_error_diff = 0;
+	// int16_t roll_error_diff = 0;
+	// int16_t yaw_error_diff = 0;
+
+	// int16_t pitch_output = 0;
+	// int16_t roll_output = 0;
+	// int16_t yaw_output = 0;
+
+
+	// pitch_error = 0 - pitch;
+	// roll_error = 0 - roll;
+	// yaw_error = 0 - yaw;
+
+	// pitch_error_sum += pitch_error;
+	// roll_error_sum += roll_error;
+	// yaw_error_sum += yaw_error;
+
+	// pitch_error_diff = pitch_error - pitch_error_diff;
+	// roll_error_diff = roll_error - roll_error_diff;
+	// yaw_error_diff = yaw_error - yaw_error_diff;
+
+	// pitch_output = kp * pitch_error + ki * pitch_error_sum + kd * pitch_error_diff;
+	// roll_output = kp * roll_error + ki * roll_error_sum + kd * roll_error_diff;
+	// yaw_output = kp * yaw_error + ki * yaw_error_sum + kd * yaw_error_diff;
+
+	// dutyCycleArray[0] = 1000 + pitch_output + roll_output + yaw_output;
+	// dutyCycleArray[1] = 1000 + pitch_output - roll_output - yaw_output;
+	// dutyCycleArray[2] = 1000 - pitch_output - roll_output + yaw_output;
+	// dutyCycleArray[3] = 1000 - pitch_output + roll_output - yaw_output;
+
 
 	INT32U tick2 = OSTimeGet();
 	outer_loop_time = tick2 - tick1;
