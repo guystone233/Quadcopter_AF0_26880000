@@ -12,8 +12,8 @@ void USARTInit(void);
 void SendByte(char ch);
 void SendString(char *ch);
 char ReadByte(void);
-void DMA_USART1_Send(char *data,int size);
-void USART1_printf(char *format, ...);
+//void DMA_USART1_Send(char *data,int size);
+//void USART1_printf(char *format, ...);
 
 char *ToString(int iVal);
 

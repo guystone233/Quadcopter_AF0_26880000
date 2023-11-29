@@ -37,7 +37,7 @@ void InitTask(void *p_arg)
 	Tim_Init();
 	MPU6050_Init();
 	OLED_Init();
-	USART1_printf("TEST114514\r\n");
+//	USART1_printf("TEST114514\r\n");
 	
 	OSTaskCreate(TimTask, NULL, &TimTaskStk[99], 4);
 	// OSTaskCreate(MPU6050Task, NULL, &GY86TaskStk[99], 3);
