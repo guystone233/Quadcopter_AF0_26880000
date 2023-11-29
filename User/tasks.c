@@ -83,8 +83,8 @@ void Task1000HZ(void *p_arg)
 
 void GY86Task()
 {
-	// Gy86: MPU6050(Accelerometer, Gyroscope), HMC5883(Magnetometer)
-	INT32U tick1 = OSTimeGet();
+	// // Gy86: MPU6050(Accelerometer, Gyroscope), HMC5883(Magnetometer)
+	// INT32U tick1 = OSTimeGet();
 
 	// I2C1_GetAll(data);
 	// accx_read = (int16_t)((data[0] << 8) + data[1]);
@@ -108,8 +108,8 @@ void GY86Task()
 #endif
 	
 
-	INT32U tick2 = OSTimeGet();
-	gy86_time = tick2 - tick1;
+	// INT32U tick2 = OSTimeGet();
+	// gy86_time = tick2 - tick1;
 }
 
 void KalmanTask()
@@ -126,7 +126,7 @@ void SendTask()
 {
 	INT32U tick1 = OSTimeGet();
 
-	//FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
+	FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
 	// FANO_Send_MAG(data);
 	FANO_Send_Data(Frame_Quaternion, (uint8_t *)ano_data);
 	// FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);

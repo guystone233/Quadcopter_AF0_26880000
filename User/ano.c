@@ -31,9 +31,9 @@ void FANO_Send_Data(uint8_t funcID,int8_t *data)
     }
     ANO_Send_Data[4+ANO_Send_Data[3]] = sumcheck;
     ANO_Send_Data[5+ANO_Send_Data[3]] = addcheck;
-    DMA_USART1_Send(ANO_Send_Data,ANO_Send_Data[3] + 6);
-    // for(i = 0;i < ANO_Send_Data[3] + 6; i++)
-    // {
-    //     SendByte(ANO_Send_Data[i]);
-    // }
+    // DMA_USART1_Send(ANO_Send_Data,ANO_Send_Data[3] + 6);
+    for(i = 0;i < ANO_Send_Data[3] + 6; i++)
+    {
+        SendByte(ANO_Send_Data[i]);
+    }
 }

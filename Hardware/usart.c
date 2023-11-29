@@ -1,35 +1,35 @@
 #include "usart.h"
 
-// char USART1_RX_BUF[USART1_RX_BUF_SIZE]; // 接收缓冲,最大USART1_RX_BUF_SIZE个字节.
+// // char USART1_RX_BUF[USART1_RX_BUF_SIZE]; // 接收缓冲,最大USART1_RX_BUF_SIZE个字节.
 char USART1_TX_BUF[USART1_TX_BUF_SIZE]; // 发送缓冲,最大USART1_TX_BUF_SIZE字节.
 
-void DMA2_Stream7_IRQHandler(void){
-	if(DMA_GetITStatus(DMA2_Stream7,DMA_IT_TCIF7) != RESET)   
-    {  
-        /* 清除标志位 */
-        DMA_ClearFlag(DMA2_Stream7,DMA_IT_TCIF7);  
-        /* 关闭DMA */
-        DMA_Cmd(DMA2_Stream7,DISABLE);
-        /* 打开发送完成中断,确保最后一个字节发送成功 */
-        USART_ITConfig(USART1,USART_IT_TC,ENABLE);  
-    }  
-}
+// void DMA2_Stream7_IRQHandler(void){
+// 	if(DMA_GetITStatus(DMA2_Stream7,DMA_IT_TCIF7) != RESET)   
+//     {  
+//         /* 清除标志位 */
+//         DMA_ClearFlag(DMA2_Stream7,DMA_IT_TCIF7);  
+//         /* 关闭DMA */
+//         DMA_Cmd(DMA2_Stream7,DISABLE);
+//         /* 打开发送完成中断,确保最后一个字节发送成功 */
+//         USART_ITConfig(USART1,USART_IT_TC,ENABLE);  
+//     }  
+// }
 
-void USART1_IRQHandler(void){
-    if(USART_GetITStatus(USART1, USART_IT_TXE) == RESET)  
-    {  
-        /* 关闭发送完成中断  */ 
-        USART_ITConfig(USART1,USART_IT_TC,DISABLE);  
-    }   
-}
+// void USART1_IRQHandler(void){
+//     if(USART_GetITStatus(USART1, USART_IT_TXE) == RESET)  
+//     {  
+//         /* 关闭发送完成中断  */ 
+//         USART_ITConfig(USART1,USART_IT_TC,DISABLE);  
+//     }   
+// }
 
-void DMA_USART1_Send(char *data,int size)
-{
-    memcpy(USART1_TX_BUF,data,size);                                                                            //复制数据到DMA发送缓存区
-    while (DMA_GetCmdStatus(DMA2_Stream7) != DISABLE);                                                //确保DMA可以被设置
-    DMA_SetCurrDataCounter(DMA2_Stream7,size);                                                                //设置数据传输长度
-    DMA_Cmd(DMA2_Stream7,ENABLE);                                                                                            //打开DMA数据流，开始发送
-}
+// void DMA_USART1_Send(char *data,int size)
+// {
+//     memcpy(USART1_TX_BUF,data,size);                                                                            //复制数据到DMA发送缓存区
+//     while (DMA_GetCmdStatus(DMA2_Stream7) != DISABLE);                                                //确保DMA可以被设置
+//     DMA_SetCurrDataCounter(DMA2_Stream7,size);                                                                //设置数据传输长度
+//     DMA_Cmd(DMA2_Stream7,ENABLE);                                                                                            //打开DMA数据流，开始发送
+// }
 
 void USART1_printf(char *format, ...)
 {
@@ -45,7 +45,8 @@ void USART1_printf(char *format, ...)
 	
 	va_end(arg_ptr);														//注意必须关闭
  
-	DMA_USART1_Send(USART1_TX_BUF,strlen((const char*)USART1_TX_BUF));	//发送USART2_TX_BUF内容
+	// DMA_USART1_Send(USART1_TX_BUF,strlen((const char*)USART1_TX_BUF));	//发送USART2_TX_BUF内容
+	SendString(USART1_TX_BUF);
 }
 
 void SendByte(char ch)
@@ -130,44 +131,44 @@ void USARTInit(void)
 
 	/*** DMA ***/
 	// 使用DMA2_Stream7 Channel4（USART1_TX）
-	DMA_InitTypeDef  DMA_InitStructure;
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE); // 使能DMA2时钟
+	// DMA_InitTypeDef  DMA_InitStructure;
+	// RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE); // 使能DMA2时钟
 
-	DMA_DeInit(DMA2_Stream7);												//复位DMA状态  清空数据
-	while(DMA_GetCmdStatus(DMA2_Stream7) != 0);								//判断流内数据是否清零
+	// DMA_DeInit(DMA2_Stream7);												//复位DMA状态  清空数据
+	// while(DMA_GetCmdStatus(DMA2_Stream7) != 0);								//判断流内数据是否清零
 
-	DMA_InitStructure.DMA_Channel = DMA_Channel_4;							//通道选择
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;		//外设地址
-	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)USART1_TX_BUF;		//内存地址
-	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;					//数据传输方向
-	DMA_InitStructure.DMA_BufferSize = USART1_TX_BUF_SIZE;					//数据传输量
-	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;		//外设地址不增加
-	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;					//内存地址自增
-	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;	//外设数据长度
-	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;			//内存数据长度
-	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;							//DMA模式
-	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;					//DMA优先级
-	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;					//DMA FIFO模式
-	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;		//DMA FIFO阈值
-	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;				//内存突发单次传输
-	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;		//外设突发单次传输
+	// DMA_InitStructure.DMA_Channel = DMA_Channel_4;							//通道选择
+	// DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;		//外设地址
+	// DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)USART1_TX_BUF;		//内存地址
+	// DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;					//数据传输方向
+	// DMA_InitStructure.DMA_BufferSize = USART1_TX_BUF_SIZE;					//数据传输量
+	// DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;		//外设地址不增加
+	// DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;					//内存地址自增
+	// DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;	//外设数据长度
+	// DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;			//内存数据长度
+	// DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;							//DMA模式
+	// DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;					//DMA优先级
+	// DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;					//DMA FIFO模式
+	// DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;		//DMA FIFO阈值
+	// DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;				//内存突发单次传输
+	// DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;		//外设突发单次传输
 
-	DMA_Init(DMA2_Stream7, &DMA_InitStructure);								//初始化DMA
+	// DMA_Init(DMA2_Stream7, &DMA_InitStructure);								//初始化DMA
 
-	DMA_ITConfig(DMA2_Stream7, DMA_IT_TC, ENABLE);							//使能DMA传输完成中断
+	// DMA_ITConfig(DMA2_Stream7, DMA_IT_TC, ENABLE);							//使能DMA传输完成中断
 	
-	USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);							//使能串口DMA发送
+	// USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);							//使能串口DMA发送
 
-	// NVIC_InitStructure.NVIC_IRQChannel                   = DMA2_Stream7_IRQn;           
-    // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;          
-    // NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 1; 
-    // NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
-    // NVIC_Init(&NVIC_InitStructure);
+	// // NVIC_InitStructure.NVIC_IRQChannel                   = DMA2_Stream7_IRQn;           
+    // // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;          
+    // // NVIC_InitStructure.NVIC_IRQChannelSubPriority        = 1; 
+    // // NVIC_InitStructure.NVIC_IRQChannelCmd                = ENABLE;
+    // // NVIC_Init(&NVIC_InitStructure);
 
-	NVIC_SetPriority(DMA2_Stream7_IRQn, 1);									//设置DMA中断优先级
-	NVIC_EnableIRQ(DMA2_Stream7_IRQn);										//使能DMA中断
+	// NVIC_SetPriority(DMA2_Stream7_IRQn, 1);									//设置DMA中断优先级
+	// NVIC_EnableIRQ(DMA2_Stream7_IRQn);										//使能DMA中断
 
-	DMA_Cmd(DMA2_Stream7, DISABLE); //关闭DMA，因为一开始并没有数据要发送
+	// DMA_Cmd(DMA2_Stream7, DISABLE); //关闭DMA，因为一开始并没有数据要发送
 
 }
 
