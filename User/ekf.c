@@ -28,9 +28,9 @@ float32_t Z_k_data[6] = {0.0f};
 int16_t ACC_OFFSET_X = 0;
 int16_t ACC_OFFSET_Y = 0;
 int16_t ACC_OFFSET_Z = 0;
-int16_t GYRO_OFFSET_X = 0;
-int16_t GYRO_OFFSET_Y = 0;
-int16_t GYRO_OFFSET_Z = 0;
+int16_t GYRO_OFFSET_X = -52;
+int16_t GYRO_OFFSET_Y = 6;
+int16_t GYRO_OFFSET_Z = -18;
 
 // void Send_Quaternion_Data()
 // {
@@ -205,24 +205,24 @@ void ekf_update()
     float32_t accx = 0, accy = 0, accz = 0;
     float32_t gyrox = 0, gyroy = 0, gyroz = 0;
     float32_t magx = 0, magy = 0, magz = 0;
-    // accx_raw = I2C1_GetMPU6050X() + ACC_OFFSET_X;
-    // accy_raw = I2C1_GetMPU6050Y() + ACC_OFFSET_Y;
-    // accz_raw = I2C1_GetMPU6050Z() + ACC_OFFSET_Z;
-    // gyrox_raw = I2C1_GetGyroX() - GYRO_OFFSET_X;
-    // gyroy_raw = I2C1_GetGyroY() - GYRO_OFFSET_Y;
-    // gyroz_raw = I2C1_GetGyroZ() - GYRO_OFFSET_Z;
-    // magx_raw = I2C1_GetHMC5883X();
-    // magy_raw = I2C1_GetHMC5883Y();
-    // magz_raw = I2C1_GetHMC5883Z();
-    accx_raw = accx_read + ACC_OFFSET_X;
-    accy_raw = accy_read + ACC_OFFSET_Y;
-    accz_raw = accz_read + ACC_OFFSET_Z;
-    gyrox_raw = gyrox_read - GYRO_OFFSET_X;
-    gyroy_raw = gyroy_read - GYRO_OFFSET_Y;
-    gyroz_raw = gyroz_read - GYRO_OFFSET_Z;
-    magx_raw = magx_read;
-    magy_raw = magy_read;
-    magz_raw = magz_read;
+    accx_raw = I2C1_GetAccX() + ACC_OFFSET_X;
+    accy_raw = I2C1_GetAccY() + ACC_OFFSET_Y;
+    accz_raw = I2C1_GetAccZ() + ACC_OFFSET_Z;
+    gyrox_raw = I2C1_GetGyroX() - GYRO_OFFSET_X;
+    gyroy_raw = I2C1_GetGyroY() - GYRO_OFFSET_Y;
+    gyroz_raw = I2C1_GetGyroZ() - GYRO_OFFSET_Z;
+    magx_raw = I2C1_GetMagX();
+    magy_raw = I2C1_GetMagY();
+    magz_raw = I2C1_GetMagZ();
+    // accx_raw = accx_read + ACC_OFFSET_X;
+    // accy_raw = accy_read + ACC_OFFSET_Y;
+    // accz_raw = accz_read + ACC_OFFSET_Z;
+    // gyrox_raw = gyrox_read - GYRO_OFFSET_X;
+    // gyroy_raw = gyroy_read - GYRO_OFFSET_Y;
+    // gyroz_raw = gyroz_read - GYRO_OFFSET_Z;
+    // magx_raw = magx_read;
+    // magy_raw = magy_read;
+    // magz_raw = magz_read;
 
     accx = accx_raw * ACC_RATIO;
     accy = accy_raw * ACC_RATIO;
@@ -268,59 +268,19 @@ void ekf_update()
     normalize(3, &(EKF_in->Z_k.pData[0]));
     normalize(3, &(EKF_in->Z_k.pData[3]));
     EKF_in->halfT = (float)(tick2 - EKF_in->tick_k_minus) / (float)OS_TICKS_PER_SEC / 2.0f;
+    // print_var((float)(tick2 - EKF_in->tick_k_minus), "T");
+    // print_var(EKF_in->halfT*2.0f, "T");
     EKF_in->tick_k_minus = tick2;
-
+    
 #define f(i) EKF_in->f.pData[i]
 #define halfT EKF_in->halfT
-    f(0) = 1.0f;
-    f(1) = -gyrox * halfT;
-    f(2) = -gyroy * halfT;
-    f(3) = -gyroz * halfT;
-    f(4) = 0.0f;
-    f(5) = 0.0f;
-    f(6) = 0.0f;
-    f(7) = gyrox * halfT;
-    f(8) = 1.0f;
-    f(9) = gyroz * halfT;
-    f(10) = -gyroy * halfT;
-    f(11) = 0.0f;
-    f(12) = 0.0f;
-    f(13) = 0.0f;
-    f(14) = gyroy * halfT;
-    f(15) = -gyroz * halfT;
-    f(16) = 1.0f;
-    f(17) = gyrox * halfT;
-    f(18) = 0.0f;
-    f(19) = 0.0f;
-    f(20) = 0.0f;
-    f(21) = gyroz * halfT;
-    f(22) = gyroy * halfT;
-    f(23) = -gyrox * halfT;
-    f(24) = 1.0f;
-    f(25) = 0.0f;
-    f(26) = 0.0f;
-    f(27) = 0.0f;
-    f(28) = 0.0f;
-    f(29) = 0.0f;
-    f(30) = 0.0f;
-    f(31) = 0.0f;
-    f(32) = 1.0f;
-    f(33) = 0.0f;
-    f(34) = 0.0f;
-    f(35) = 0.0f;
-    f(36) = 0.0f;
-    f(37) = 0.0f;
-    f(38) = 0.0f;
-    f(39) = 0.0f;
-    f(40) = 1.0f;
-    f(41) = 0.0f;
-    f(42) = 0.0f;
-    f(43) = 0.0f;
-    f(44) = 0.0f;
-    f(45) = 0.0f;
-    f(46) = 0.0f;
-    f(47) = 0.0f;
-    f(48) = 1.0f;
+    f(0) = 1.0f; f(1) = -gyrox * halfT; f(2) = -gyroy * halfT; f(3) = -gyroz * halfT; f(4) = 0.0f; f(5) = 0.0f; f(6) = 0.0f;
+    f(7) = gyrox * halfT; f(8) = 1.0f; f(9) = gyroz * halfT; f(10) = -gyroy * halfT; f(11) = 0.0f; f(12) = 0.0f; f(13) = 0.0f;
+    f(14) = gyroy * halfT; f(15) = -gyroz * halfT; f(16) = 1.0f; f(17) = gyrox * halfT; f(18) = 0.0f; f(19) = 0.0f; f(20) = 0.0f;
+    f(21) = gyroz * halfT; f(22) = gyroy * halfT; f(23) = -gyrox * halfT; f(24) = 1.0f; f(25) = 0.0f; f(26) = 0.0f; f(27) = 0.0f;
+    f(28) = 0.0f; f(29) = 0.0f; f(30) = 0.0f; f(31) = 0.0f; f(32) = 1.0f; f(33) = 0.0f; f(34) = 0.0f;
+    f(35) = 0.0f; f(36) = 0.0f; f(37) = 0.0f; f(38) = 0.0f; f(39) = 0.0f; f(40) = 1.0f; f(41) = 0.0f;
+    f(42) = 0.0f; f(43) = 0.0f; f(44) = 0.0f; f(45) = 0.0f; f(46) = 0.0f; f(47) = 0.0f; f(48) = 1.0f;
 #undef f
 #undef halfT
 }
@@ -378,30 +338,12 @@ void H_k_func(arm_matrix_instance_f32 *x_k, arm_matrix_instance_f32 *H_matrix, f
     Hb1 = Hb2 = Hb3 = Hb4 = 0;
 #endif
 #define H(i) H_matrix->pData[i]
-    H(0) = Ha1;
-    H(1) = Ha2;
-    H(2) = Ha3;
-    H(3) = Ha4;
-    H(7) = Ha4;
-    H(8) = -Ha3;
-    H(9) = Ha2;
-    H(10) = -Ha1;
-    H(14) = -Ha3;
-    H(15) = -Ha4;
-    H(16) = Ha1;
-    H(17) = Ha2;
-    H(21) = Hb1;
-    H(22) = Hb2;
-    H(23) = Hb3;
-    H(24) = Hb4;
-    H(28) = Hb4;
-    H(29) = -Hb3;
-    H(30) = Hb2;
-    H(31) = -Hb1;
-    H(35) = -Hb3;
-    H(36) = -Hb4;
-    H(37) = Hb1;
-    H(38) = Hb2;
+    H(0) = Ha1; H(1) = Ha2; H(2) = Ha3; H(3) = Ha4;
+    H(7) = Ha4; H(8) = -Ha3; H(9) = Ha2; H(10) = -Ha1;
+    H(14) = -Ha3; H(15) = -Ha4; H(16) = Ha1; H(17) = Ha2;
+    H(21) = Hb1; H(22) = Hb2; H(23) = Hb3; H(24) = Hb4;
+    H(28) = Hb4; H(29) = -Hb3; H(30) = Hb2; H(31) = -Hb1;
+    H(35) = -Hb3; H(36) = -Hb4; H(37) = Hb1; H(38) = Hb2;
 #undef H
     return;
 }
