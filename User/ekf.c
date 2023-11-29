@@ -36,10 +36,10 @@ int16_t GYRO_OFFSET_Z = 0;
 // {
 //     FANO_Send_Data(Frame_Quaternion, (uint8_t *)ano_data);
 // }
-// void Send_Euler_Data()
-// {
-//     FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
-// }
+void Send_Euler_Data()
+{
+    FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
+}
 void quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result);
 void inline quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result)
 {
@@ -429,21 +429,21 @@ void K_func(arm_matrix_instance_f32 *P_k_prev, arm_matrix_instance_f32 *H_k, arm
 void ekf_calculate()
 {
     ekf_update(EKF_in);
-    // float32_t euler_x, euler_y, euler_z;
-    // euler_x = asin(2 * (EKF_in -> x_k_prev.pData[2] * EKF_in -> x_k_prev.pData[3] + EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[1]));
-    // arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[2] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[3]), 1 - 2 * (EKF_in -> x_k_prev.pData[2] * EKF_in -> x_k_prev.pData[2] + EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1]), &euler_y);
-    // arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[3] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[2]), 1 - 2 * (EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1] + EKF_in -> x_k_prev.pData[3] * EKF_in -> x_k_prev.pData[3]), &euler_z);
-    // euler_x = euler_x * 180 / PI;
-    // euler_y = euler_y * 180 / PI;
-    // euler_z = euler_z * 180 / PI;
-    // ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
-    // ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
-    // ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
-    // ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
-    // ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
-    // ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
-    // ano_data_euler -> data[6] = 0;
-    // Send_Euler_Data();
+    float32_t euler_x, euler_y, euler_z;
+    euler_x = asin(2 * (EKF_in -> x_k_prev.pData[2] * EKF_in -> x_k_prev.pData[3] + EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[1]));
+    arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[2] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[3]), 1 - 2 * (EKF_in -> x_k_prev.pData[2] * EKF_in -> x_k_prev.pData[2] + EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1]), &euler_y);
+    arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[3] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[2]), 1 - 2 * (EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1] + EKF_in -> x_k_prev.pData[3] * EKF_in -> x_k_prev.pData[3]), &euler_z);
+    euler_x = euler_x * 180 / PI;
+    euler_y = euler_y * 180 / PI;
+    euler_z = euler_z * 180 / PI;
+    ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
+    ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
+    ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
+    ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
+    ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
+    ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
+    ano_data_euler -> data[6] = 0;
+    Send_Euler_Data();
     arm_matrix_instance_f32 I_7x7, x_k_minus, P_k_minus, F_k;
     float32_t x_k_minus_data[7] = {0.0f}, P_k_minus_data[49] = {0.0f}, F_k_data[49] = {0.0f};
     float32_t I_7x7_data[49] = {1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,

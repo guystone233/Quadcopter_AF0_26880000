@@ -39,7 +39,9 @@ void GY86_Init(void)
     I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_FIFO_EN, 0x00);
     I2C1_Write_1Byte_Register(MPU6050_ADDR, INT_PIN_CFG, 0x02);
     I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_USER_CTRL, 0x00);
+#ifdef GY86
     HMC5883Init();
+#endif
 }
 
 void HMC5883Init(void)
@@ -158,5 +160,7 @@ void I2C1_GetAll(int8_t *data)
 {
     I2C1_Read_multiByte_Register(MPU6050_ADDR, MPU6050_ACCEL_XOUT_H, data, 14);
     // I2C1_Read_multiByte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_H, data + 6, 6);
+#ifdef GY86
     I2C1_Read_multiByte_Register(HMC5883_Addr, OutputXMSB, data + 12, 6);
+#endif
 }

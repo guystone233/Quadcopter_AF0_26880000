@@ -12,7 +12,7 @@ extern int dutyCycleArray[6];
 
 /* Delay */
 INT16U Task1000HZDelay = 4;
-INT16U Task500HZDelay = 4;
+INT16U Task500HZDelay = 2;
 INT16U Task250HZDelay = 4;
 
 // INT16U gy86_delay = 150;
@@ -86,19 +86,27 @@ void GY86Task()
 	// Gy86: MPU6050(Accelerometer, Gyroscope), HMC5883(Magnetometer)
 	INT32U tick1 = OSTimeGet();
 
-	I2C1_GetAll(data);
-	accx_read = (int16_t)((data[0] << 8) + data[1]);
-	accy_read = (int16_t)((data[2] << 8) + data[3]);
-	accz_read = (int16_t)((data[4] << 8) + data[5]);
-	tmp = (int16_t)((data[6] << 8) + data[7]) * 10;
-	gyrox_read = (int16_t)((data[8] << 8) + data[9]);
-	gyroy_read = (int16_t)((data[10] << 8) + data[11]);
+	// I2C1_GetAll(data);
+	// accx_read = (int16_t)((data[0] << 8) + data[1]);
+	// accy_read = (int16_t)((data[2] << 8) + data[3]);
+	// accz_read = (int16_t)((data[4] << 8) + data[5]);
+	// tmp = (int16_t)((data[6] << 8) + data[7]) * 10;
+	// gyrox_read = (int16_t)((data[8] << 8) + data[9]);
+	// gyroy_read = (int16_t)((data[10] << 8) + data[11]);
 	//gyroz_read = (int16_t)((data[12] << 8) + data[13]);
+	accx_read = (int16_t) I2C1_GetAccX();
+	accy_read = (int16_t) I2C1_GetAccY();
+	accz_read = (int16_t) I2C1_GetAccZ();
+	gyrox_read = (int16_t) I2C1_GetGyroX();
+	gyroy_read = (int16_t) I2C1_GetGyroY();
 	gyroz_read = (int16_t) I2C1_GetGyroZ();
-	
+
+#ifdef GY86
 	magx_read = (int16_t)((data[14] << 8) + data[15]);
 	magy_read = (int16_t)((data[16] << 8) + data[17]);
 	magz_read = (int16_t)((data[18] << 8) + data[19]);
+#endif
+	
 
 	INT32U tick2 = OSTimeGet();
 	gy86_time = tick2 - tick1;
