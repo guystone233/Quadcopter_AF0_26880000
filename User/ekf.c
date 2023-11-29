@@ -376,8 +376,8 @@ void ekf_calculate()
     arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[2] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[3]), 1 - 2 * (EKF_in -> x_k_prev.pData[2] * EKF_in -> x_k_prev.pData[2] + EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1]), &euler_y);
     arm_atan2_f32(2 * (EKF_in -> x_k_prev.pData[0] * EKF_in -> x_k_prev.pData[3] - EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[2]), 1 - 2 * (EKF_in -> x_k_prev.pData[1] * EKF_in -> x_k_prev.pData[1] + EKF_in -> x_k_prev.pData[3] * EKF_in -> x_k_prev.pData[3]), &euler_z);
     euler_x = euler_x * 180 / PI;
-    euler_y = euler_y * 180 / PI;
-    euler_z = euler_z * 180 / PI;
+    euler_y = -euler_y * 180 / PI;
+    euler_z = -euler_z * 180 / PI;
     ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
     ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
     ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
