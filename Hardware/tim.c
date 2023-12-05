@@ -6,8 +6,8 @@
 #define MotorLockOff 0
 #define pulseWidth 20000
 // 定义全局变量，存储接收到的PPM数据
-volatile uint16_t ppmData[7], ppm_CCR1data[7];
-volatile uint16_t dutyCycleArray[7];
+uint16_t ppmData[7], ppm_CCR1data[7];
+uint16_t dutyCycleArray[7];
 
 uint8_t LockStatus = 0;
 uint8_t psc = 84 - 1;
@@ -204,17 +204,38 @@ void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle)
 
 void PWM_output(void)
 {
-		LockStatus = CheckMotorLock();
+		LockStatus = CheckMotorLock();  
 #ifdef MOTOR_INIT
 		MotorInit();
 #endif
 		
     StoreDutyCycle(dutyCycleArray, ppm_CCR1data);
+
     if(!LockStatus)
     {
+        SendString("Motor is UnLocked!\r\n");
+        // for(uint8_t i = 1; i < 5; i++)
+        // {
+        //     setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
+        // }
+        // 1100: 0%; 1940: 100%
+        int offset = 0.1;
+        int out1 = 1100 + motor1 * 8.4 * offset;
+        int out2 = 1100 + motor2 * 8.4 * offset;
+        int out3 = 1100 + motor3 * 8.4 * offset;
+        int out4 = 1100 + motor4 * 8.4 * offset;
+        setPWMDutyCycle(TIM1, 1, out1);
+        setPWMDutyCycle(TIM1, 2, out2);
+        setPWMDutyCycle(TIM1, 3, out3);
+        setPWMDutyCycle(TIM1, 4, out4);
+    }
+    else
+    {
+        SendString("Motor is Locked!\r\n");
         for(uint8_t i = 1; i < 5; i++)
         {
-            setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
+            for(uint16_t j = 0; j < 1000; j++);
+            setPWMDutyCycle(TIM1, i, 1100);
         }
     }
 }

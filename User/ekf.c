@@ -11,7 +11,7 @@ R: 观测噪声矩阵R，6*6
 Z_k: 观测向量，[ax ay az mx my mz]' , 6*1
 K: kalman增益矩阵，7*6
 */
-// #define SKIP_MAG_CALIBRATION
+#define SKIP_MAG_CALIBRATION
 #define SendString_serial(x) SendString(x)
 // #define SendString_serial(x) SendString("")
 EKF_input *EKF_in;
@@ -31,6 +31,9 @@ int16_t ACC_OFFSET_Z = 0;
 int16_t GYRO_OFFSET_X = -52;
 int16_t GYRO_OFFSET_Y = 6;
 int16_t GYRO_OFFSET_Z = -18;
+int16_t MAG_OFFSET_X = 0;
+int16_t MAG_OFFSET_Y = 0;
+int16_t MAG_OFFSET_Z = 0;
 
 // void Send_Quaternion_Data()
 // {
@@ -40,6 +43,7 @@ void Send_Euler_Data()
 {
     FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
 }
+
 void quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result);
 void inline quaternion_multiply(float32_t q0, float32_t q1, float32_t q2, float32_t q3, float32_t r0, float32_t r1, float32_t r2, float32_t r3, float32_t *result)
 {
@@ -185,7 +189,9 @@ void ekf_init()
     for (int i = 0; i < 36; i++)
     {
         if (i % 7 == 0)
+					if (i<=21)
             EKF_in->R.pData[i] = 0.2f;
+					else EKF_in->R.pData[i] = 0.0001f;
         else
             EKF_in->R.pData[i] = 0.0f;
     }
@@ -267,6 +273,7 @@ void ekf_update()
     EKF_in->Z_k.pData[5] = magz;
     normalize(3, &(EKF_in->Z_k.pData[0]));
     normalize(3, &(EKF_in->Z_k.pData[3]));
+    // print_martix(&(EKF_in->Z_k), "Z_k");
     EKF_in->halfT = (float)(tick2 - EKF_in->tick_k_minus) / (float)OS_TICKS_PER_SEC / 2.0f;
     // print_var((float)(tick2 - EKF_in->tick_k_minus), "T");
     // print_var(EKF_in->halfT*2.0f, "T");

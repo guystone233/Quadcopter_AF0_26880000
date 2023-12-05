@@ -47,7 +47,7 @@ void GY86_Init(void)
 void HMC5883Init(void)
 {
     I2C1_Write_1Byte_Register(AddressHMC5883, ConfigA, 0x19);      // Outout rate : 75Hz
-    I2C1_Write_1Byte_Register(AddressHMC5883, ConfigB, 0x20);      // Gain : 1.3Ga
+    I2C1_Write_1Byte_Register(AddressHMC5883, ConfigB, 0x00);      // Gain : 1.3Ga
     I2C1_Write_1Byte_Register(AddressHMC5883, ModeRegister, 0x00); // Continuous-Measurement Mode
     // StatusRegister = 0x01 when data prepared
 }

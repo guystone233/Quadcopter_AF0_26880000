@@ -14,7 +14,6 @@
 void trace_task_create(OS_TCB *ptcb)
 {
     USART1_printf("%d[task create]%d\r\n",OSTimeGet(), ptcb->OSTCBPrio);
-
 }
 void trace_task_ready(OS_TCB *ptcb)
 {

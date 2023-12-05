@@ -58,19 +58,42 @@ void SendByte(char ch)
 
 void SendString(char *ch)
 {
+	// OS_CPU_SR cpu_sr = 0;
+	// OS_ENTER_CRITICAL();
 	for (int i = 0; ch[i] != '\0'; i++)
 		SendByte(ch[i]);
+	// OS_EXIT_CRITICAL();
 }
 
 char ReadByte(void)
 {
-	while ((USART1->SR & (1 << 5)) == 0)
-		; // 查询是否受到数据
+	int timeout = 10000; // Set timeout value
+	while (((USART1->SR & (1 << 5)) == 0) && (timeout > 0)) {
+		timeout--;
+	}
+	if (timeout == 0) {
+		return '*'; // Timeout occurred
+	}
 	char tmp = USART1->DR & (uint16_t)0x01FF;
 	if (tmp != 0)
 		return tmp;
 	else
 		return '*';
+}
+
+void ReadString(char *ch)
+{
+	// OS_CPU_SR cpu_sr = 0;
+	// OS_ENTER_CRITICAL();
+	int i = 0;
+	while (1)
+	{
+		ch[i] = ReadByte();
+		if (ch[i] == '*')
+			ch[i] = '\0';
+			break;
+		i++;
+	}
 }
 
 #define pin1 6
@@ -129,6 +152,16 @@ void USARTInit(void)
 
 	USART1->CR1 |= 1 << 13; // USART enable 19.6.4
 
+	// Enable USART1 Interrupt
+	USART1->CR1 |= 0x1 << 5; // enable RXNE interrupt 1 19.6.4
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 抢占优先级
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  // 子优先级
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			  // IRQ通道使能
+	NVIC_Init(&NVIC_InitStructure);							  // 根据指定的参数初始化VIC寄存器
+
 	/*** DMA ***/
 	// 使用DMA2_Stream7 Channel4（USART1_TX）
 	// DMA_InitTypeDef  DMA_InitStructure;
@@ -170,6 +203,21 @@ void USARTInit(void)
 
 	// DMA_Cmd(DMA2_Stream7, DISABLE); //关闭DMA，因为一开始并没有数据要发送
 
+}
+
+
+char USART1_RX_BUF[USART1_RX_BUF_SIZE]; // 接收缓冲,最大USART1_RX_BUF_SIZE个字节.
+uint16_t USART1_RX_STA = 0;				// 接收状态标记
+
+void USART1_IRQHandler(void)
+{
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+		USART1_RX_BUF[USART1_RX_STA++] = USART1->DR & (uint16_t)0x01FF;
+		if (USART1_RX_STA >= USART1_RX_BUF_SIZE)
+			USART1_RX_STA = 0;
+	}
 }
 
 char *ToString(int iVal)

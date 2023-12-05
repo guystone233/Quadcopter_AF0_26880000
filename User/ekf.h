@@ -26,6 +26,9 @@ extern int16_t GYRO_OFFSET_X;
 extern int16_t GYRO_OFFSET_Y;
 extern int16_t GYRO_OFFSET_Y;
 extern int16_t GYRO_OFFSET_Z;
+extern int16_t MAG_OFFSET_X;
+extern int16_t MAG_OFFSET_Y;
+extern int16_t MAG_OFFSET_Z;
 
 
 
