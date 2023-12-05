@@ -472,7 +472,7 @@ void mpu6050_init(void)
     dmp_set_fifo_rate(DEFAULT_MPU_HZ);
     mpu_set_dmp_state(1);
     hal.dmp_on = 1;
-		// run_self_test();
+		run_self_test();
 		
 }		
 
