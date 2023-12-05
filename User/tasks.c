@@ -73,10 +73,33 @@ void Task1000HZ(void *p_arg)
 {
 	while (1)
 	{
-		GY86Task();
-		KalmanTask();
-		SendTask();
-		OLEDTask();
+		// GY86Task();
+		// KalmanTask();
+		// SendTask();
+		// OLEDTask();
+		float Pitch,Roll,Yaw;
+		long Temp;
+		MPU6050_Get_Euler_Temputer(&Pitch,&Roll,&Yaw,&Temp);
+		// USART1_printf("Pitch : %.4f     ",(float)Pitch );
+		// USART1_printf("Roll : %.4f    ",(float)Roll );
+		// USART1_printf("Yaw : %.4f   \r\n",(float)Yaw );
+		ANO_data_euler ANO_data;
+		ANO_data.len = 7;
+		// ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
+		// ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
+		// ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
+		// ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
+		// ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
+		// ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
+		// ano_data_euler -> data[6] = 0;
+		ANO_data.data[0] = (int16_t)(Pitch*100) & 0xff;
+		ANO_data.data[1] = ((int16_t)(Pitch*100) >> 8) & 0xff;
+		ANO_data.data[2] = (int16_t)(Roll*100) & 0xff;
+		ANO_data.data[3] = ((int16_t)(Roll*100) >> 8) & 0xff;
+		ANO_data.data[4] = (int16_t)(Yaw*100) & 0xff;
+		ANO_data.data[5] = ((int16_t)(Yaw*100) >> 8) & 0xff;
+		ANO_data.data[6] = 0;
+		FANO_Send_Data(Frame_EulerAngle,(uint8_t *) &ANO_data);
 		OSTimeDlyHMSM(0, 0, 0, Task1000HZDelay);
 	}
 }
