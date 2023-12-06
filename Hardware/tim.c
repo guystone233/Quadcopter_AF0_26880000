@@ -1,6 +1,4 @@
-      
 #include "tim.h"
-#include "delay.h"
 
 #define MotorLockOn 1
 #define MotorLockOff 0
