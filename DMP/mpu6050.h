@@ -20,4 +20,4 @@ int Sensors_I2C_WriteRegister(unsigned char slave_addr,
 																				
 void mpu6050_init(void);
 int fputcc(int ch);
-void MPU6050_Get_Euler_Temputer(float *Pitch,float *Roll,float *Yaw,long *temperature);
+void MPU6050_Get_Euler_IMU(float *Pitch,float *Roll,float *Yaw,long *temperature,short imu[]);

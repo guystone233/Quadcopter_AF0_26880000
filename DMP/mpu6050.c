@@ -476,7 +476,7 @@ void mpu6050_init(void)
 		
 }		
 
-void MPU6050_Get_Euler_Temputer(float *Pitch,float *Roll,float *Yaw,long *temperature){
+void MPU6050_Get_Euler_IMU(float *Pitch,float *Roll,float *Yaw,long *temperature, short imu[]){
 //  while(1){
     
     unsigned long sensor_timestamp;
@@ -518,6 +518,9 @@ void MPU6050_Get_Euler_Temputer(float *Pitch,float *Roll,float *Yaw,long *temper
 					if (sensors & INV_XYZ_GYRO) {
 							/* Push the new data to the MPL. */
 							inv_build_gyro(gyro, sensor_timestamp);
+              imu[0] = gyro[0];
+              imu[1] = gyro[1];
+              imu[2] = gyro[2];
 							new_data = 1;
 							if (new_temp) {
 									new_temp = 0;

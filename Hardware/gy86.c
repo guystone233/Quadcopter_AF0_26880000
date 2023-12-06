@@ -114,24 +114,24 @@ uint16_t I2C1_GetAccZ(void)
     return data;
 }
 
-uint16_t I2C1_GetGyroX(void)
+int16_t I2C1_GetGyroX(void)
 {
-    uint16_t data = 0;
-    data = (uint16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_L);
+    int16_t data = 0;
+    data = (int16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_L);
     return data;
 }
 
-uint16_t I2C1_GetGyroY(void)
+int16_t I2C1_GetGyroY(void)
 {
-    uint16_t data = 0;
-    data = (uint16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_YOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_YOUT_L);
+    int16_t data = 0;
+    data = (int16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_YOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_YOUT_L);
     return data;
 }
 
-uint16_t I2C1_GetGyroZ(void)
+int16_t I2C1_GetGyroZ(void)
 {
-    uint16_t data = 0;
-    data = (uint16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_ZOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_ZOUT_L);
+    int16_t data = 0;
+    data = (int16_t)(I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_ZOUT_H) << 8) + I2C1_Read_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_ZOUT_L);
     return data;
 }
 

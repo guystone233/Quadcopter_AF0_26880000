@@ -88,9 +88,9 @@ uint16_t I2C1_GetAccX(void);
 uint16_t I2C1_GetAccY(void);
 uint16_t I2C1_GetAccZ(void);
 
-uint16_t I2C1_GetGyroX(void);
-uint16_t I2C1_GetGyroY(void);
-uint16_t I2C1_GetGyroZ(void);
+int16_t I2C1_GetGyroX(void);
+int16_t I2C1_GetGyroY(void);
+int16_t I2C1_GetGyroZ(void);
 
 uint16_t I2C1_GetMagX(void);
 uint16_t I2C1_GetMagY(void);

@@ -8,6 +8,7 @@ int16_t tmp = 0;
 float Pitch,Roll,Yaw;
 long Temp;
 ANO_data_euler ANO_data1;
+short imu_data[6] = {0};
 
 
 float inner_kp = 0.1f;
@@ -171,27 +172,27 @@ void KalmanTask()
 
 	// ekf_calculate();
 
-		MPU6050_Get_Euler_Temputer(&Pitch,&Roll,&Yaw,&Temp);
-		// USART1_printf("Pitch : %.4f     ",(float)Pitch );
-		// USART1_printf("Roll : %.4f    ",(float)Roll );
-		// USART1_printf("Yaw : %.4f   \r\n",(float)Yaw );
-		
-		ANO_data1.len = 7;
-		// ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
-		// ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
-		// ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
-		// ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
-		// ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
-		// ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
-		// ano_data_euler -> data[6] = 0;
-		ANO_data1.data[0] = (int16_t)(Pitch*100) & 0xff;
-		ANO_data1.data[1] = ((int16_t)(Pitch*100) >> 8) & 0xff;
-		ANO_data1.data[2] = (int16_t)(-Roll*100) & 0xff;
-		ANO_data1.data[3] = ((int16_t)(-Roll*100) >> 8) & 0xff;
-		ANO_data1.data[4] = (int16_t)(-Yaw*100) & 0xff;
-		ANO_data1.data[5] = ((int16_t)(-Yaw*100) >> 8) & 0xff;
-		ANO_data1.data[6] = 0;
-		FANO_Send_Data(Frame_EulerAngle,(uint8_t *) &ANO_data1);
+	MPU6050_Get_Euler_IMU(&Pitch,&Roll,&Yaw,&Temp,imu_data);
+	// USART1_printf("Pitch : %.4f     ",(float)Pitch );
+	// USART1_printf("Roll : %.4f    ",(float)Roll );
+	// USART1_printf("Yaw : %.4f   \r\n",(float)Yaw );
+	
+	ANO_data1.len = 7;
+	// ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
+	// ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
+	// ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
+	// ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
+	// ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
+	// ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
+	// ano_data_euler -> data[6] = 0;
+	ANO_data1.data[0] = (int16_t)(Pitch*100) & 0xff;
+	ANO_data1.data[1] = ((int16_t)(Pitch*100) >> 8) & 0xff;
+	ANO_data1.data[2] = (int16_t)(-Roll*100) & 0xff;
+	ANO_data1.data[3] = ((int16_t)(-Roll*100) >> 8) & 0xff;
+	ANO_data1.data[4] = (int16_t)(-Yaw*100) & 0xff;
+	ANO_data1.data[5] = ((int16_t)(-Yaw*100) >> 8) & 0xff;
+	ANO_data1.data[6] = 0;
+	FANO_Send_Data(Frame_EulerAngle,(uint8_t *) &ANO_data1);
 
 	INT32U tick2 = OSTimeGet();
 	kalman_time = tick2 - tick1;
@@ -210,27 +211,23 @@ void SendTask()
 	// sprintf(out, "\r\n[chan:%d;%d;%d;%d;%d;%d]\r\n", ppm_CCR1data[1], ppm_CCR1data[2], ppm_CCR1data[3], ppm_CCR1data[4], ppm_CCR1data[5], ppm_CCR1data[6]);
 	// SendString(out);
 
-	char out[100];
-	sprintf(out, "\r\n[in:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
+	USART1_printf("\r\n[in:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
 		inner_gyro_roll, inner_gyro_pitch,
 		inner_pitch_lasterror, inner_roll_lasterror,
 		inner_pitch_integrator, inner_roll_integrator,
 		inner_pitch_output, inner_roll_output,
 		motor1, motor2, motor3, motor4);
-	SendString(out);
 
-	sprintf(out, "\r\n[out:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
+	USART1_printf("\r\n[out:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
 		outer_read_pitch, outer_read_roll, outer_read_yaw,
 		outer_rx_yaw, outer_rx_pitch, outer_rx_roll, outer_rx_updown,
 		outer_pitch_lasterror, outer_roll_lasterror,
 		outer_pitch_integrator, outer_roll_integrator,
 		outer_pitch_output, outer_roll_output);
-	SendString(out);
 
-	sprintf(out, "\r\n[pid:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
+	USART1_printf("\r\n[pid:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
 		inner_kp, inner_ki, inner_kd,
 		outer_kp, outer_ki, outer_kd);
-	SendString(out);
 
 	INT32U tick2 = OSTimeGet();
 	send_time = tick2 - tick1;
@@ -368,8 +365,8 @@ void InnerLoopTask()
 	INT32U tick1 = OSTimeGet();
 
 	// TODO: Inner Loop
-	inner_gyro_roll = (float) (gyrox_read - GYRO_OFFSET_X) / 32.8f;
-	inner_gyro_pitch = (float) (gyroy_read - GYRO_OFFSET_Y) / 32.8f;
+	inner_gyro_roll = (float) imu_data[0] * 4000.0f / 65536.0f / 180.0f * PI;
+	inner_gyro_pitch = (float) imu_data[1] * 4000.0f / 65536.0f / 180.0f * PI;
 
 	float diff_roll = outer_roll_output - inner_gyro_roll;
 	float diff_pitch = outer_pitch_output - inner_gyro_pitch;
