@@ -400,7 +400,6 @@ void InnerLoopTask()
 void MotorTask()
 {
 	INT32U tick1 = OSTimeGet();
-	USART1_printf("in motor task\r\n");
 	PWM_output(motor1, motor2, motor3, motor4);
 
 	INT32U tick2 = OSTimeGet();

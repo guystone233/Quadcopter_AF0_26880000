@@ -255,22 +255,23 @@ void PWM_output(float motor1, float motor2, float motor3, float motor4)
     StoreDutyCycle(dutyCycleArray, ppm_CCR1data);
     if(!LockStatus)
     {
-    //     for(uint8_t i = 1; i < 5; i++)
-    //     {
-    //         setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
-    //     }
-    // }
+        // for(uint8_t i = 1; i < 5; i++)
+        // {
+        //     setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
+            
+        // }
+        // setPWMDutyCycle(TIM2, 1, ppm_CCR1data[4]);
         // 1100 ~ 1940
-        int offset = 1;
-        int out1 = 1100 + motor1 / 100 * 840 / offset;
-        int out2 = 1100 + motor2 / 100 * 840 / offset;
-        int out3 = 1100 + motor3 / 100 * 840 / offset;
-        int out4 = 1100 + motor4 / 100 * 840 / offset;
-        setPWMDutyCycle(TIM1, 1, out1);
-        setPWMDutyCycle(TIM1, 2, out2);
-        setPWMDutyCycle(TIM1, 3, out3);
-				// setPWMDutyCycle(TIM1, 3, out4);
-        setPWMDutyCycle(TIM2, 1, out4);
+        uint16_t offset = 1;
+        uint16_t out1 = 1100 + motor1 / 100 * 840 / offset;
+        uint16_t out2 = 1100 + motor2 / 100 * 840 / offset;
+        uint16_t out3 = 1100 + motor3 / 100 * 840 / offset;
+        uint16_t out4 = 1100 + motor4 / 100 * 840 / offset;
+        setPWMDutyCycle(TIM1, 2, out1); // PA9 TIM1_CH2 
+        setPWMDutyCycle(TIM1, 3, out2); // PA10 TIM1_CH3
+        setPWMDutyCycle(TIM1, 4, out3); // PA11 TIM1_CH4
+		// setPWMDutyCycle(TIM1, 3, out4);
+        setPWMDutyCycle(TIM2, 1, out4); // PA0 TIM2_CH1
     }
 }
 
