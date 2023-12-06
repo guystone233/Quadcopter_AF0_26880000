@@ -14,7 +14,7 @@ uint8_t CheckMotorLock(void);
 void TIM3_IRQHandler(void);
 uint16_t calculateDutyCycle(uint16_t period);
 void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle);
-void PWM_output(void);
+void PWM_output(float motor1, float motor2, float motor3, float motor4);
 uint8_t CheckMotorInit(void);
 void StoreDutyCycle(uint16_t *dutyCycleArray, uint16_t *ppm_CCR1data);
 

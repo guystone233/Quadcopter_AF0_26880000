@@ -117,18 +117,28 @@ void TIM1_PWM_Init(void)
 //配置TIM2用于PWM输出，引脚为PA0
 void TIM2_PWM_Init(void)
 {
+		GPIO_InitTypeDef GPIO_InitStructure;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef TIM_OCInitStructure;
     // 使能TIM2时钟
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
 
     // 配置GPIO引脚
     RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
 
-    GPIOA->OSPEEDR |= 0x00000003;
-    GPIOA->MODER |= GPIO_MODER_MODER0_1;
-    GPIOA->OTYPER |= 0x00000001;
+//    GPIOA->OSPEEDR |= 0x00000003;
+//    GPIOA->MODER |= GPIO_MODER_MODER0_1;
+//    GPIOA->OTYPER |= 0x00000001;
 
-    GPIOA->AFR[0] |= 0x00000001;
+//    GPIOA->AFR[0] |= 0x00000001;
 
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+		GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM2);
     // 配置TIM2基本参数
     TIM2->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
     TIM2->ARR = 3200 - 1; // PWM周期为20ms
@@ -235,20 +245,32 @@ void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t CCR)
 // 存储占空比数据到数组中
 
 
-void PWM_output(void)
+void PWM_output(float motor1, float motor2, float motor3, float motor4)
 {
-		LockStatus = CheckMotorLock();
+	LockStatus = CheckMotorLock();
 #ifdef MOTOR_INIT
-		MotorInit();
+	MotorInit();
 #endif
 		
     StoreDutyCycle(dutyCycleArray, ppm_CCR1data);
     if(!LockStatus)
     {
-        for(uint8_t i = 1; i < 5; i++)
-        {
-            setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
-        }
+    //     for(uint8_t i = 1; i < 5; i++)
+    //     {
+    //         setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
+    //     }
+    // }
+        // 1100 ~ 1940
+        int offset = 1;
+        int out1 = 1100 + motor1 / 100 * 840 / offset;
+        int out2 = 1100 + motor2 / 100 * 840 / offset;
+        int out3 = 1100 + motor3 / 100 * 840 / offset;
+        int out4 = 1100 + motor4 / 100 * 840 / offset;
+        setPWMDutyCycle(TIM1, 1, out1);
+        setPWMDutyCycle(TIM1, 2, out2);
+        setPWMDutyCycle(TIM1, 3, out3);
+				setPWMDutyCycle(TIM1, 3, out4);
+        setPWMDutyCycle(TIM2, 1, out4);
     }
 }
 

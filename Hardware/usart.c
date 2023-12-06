@@ -228,25 +228,25 @@ void USART1_IRQHandler(void)
 		else if (ptr == 1) 
 		{
 			if (ch == 'p') ptr++;
-			else ptr = 0;
+			// else ptr = 0;
 		}
 		else if (ptr == 2) 
 		{
 			if (ch == 'i') ptr++;
-			else ptr = 0;
+			// else ptr = 0;
 		}
 		else if (ptr == 3) 
 		{
 			if (ch == 'd') ptr++;
-			else ptr = 0;
+			// else ptr = 0;
 		}
 		else if (ptr == 4) 
 		{
-			if (ch == ':') ptr++;
-			else {
-				ptr = 0;
+			if (ch == ':') {
+				ptr++;
 				USART1_RX_STA = 0;
 			}
+			else ptr = 0;
 		}
 		else
 		{

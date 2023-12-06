@@ -27,12 +27,12 @@ int main(void)
 
 void InitTask(void *p_arg)
 {
-	// Tim_Init();
+	Tim_Init();
 
 	GY86_Init();
 
 	// OLED_Init();
-	// MotorInit();
+	MotorInit();
 	// LED_Init();
 	exti_Init();
 	mpu6050_init();

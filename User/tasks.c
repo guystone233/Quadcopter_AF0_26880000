@@ -130,7 +130,7 @@ void Task1000HZ(void *p_arg)
 		MotorTask();
         SendTask();
 		ReceiveTask();
-		OLEDTask();
+		// OLEDTask();
 		OSTimeDlyHMSM(0, 0, 0, Task1000HZDelay);
 	}
 }
@@ -267,6 +267,12 @@ void ReceiveTask() {
 		p = strtok(NULL, ";");
 		k++;
 	}
+	if (k == 6) {
+		inner_pitch_integrator = 0.0f;
+		inner_roll_integrator = 0.0f;
+		outer_pitch_integrator = 0.0f;
+		outer_roll_integrator = 0.0f;
+	}
 
 	
 
@@ -394,8 +400,8 @@ void InnerLoopTask()
 void MotorTask()
 {
 	INT32U tick1 = OSTimeGet();
-	
-	PWM_output();
+	USART1_printf("in motor task\r\n");
+	PWM_output(motor1, motor2, motor3, motor4);
 
 	INT32U tick2 = OSTimeGet();
 	motor_time = tick2 - tick1;
