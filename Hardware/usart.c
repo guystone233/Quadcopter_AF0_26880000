@@ -207,16 +207,60 @@ void USARTInit(void)
 
 
 char USART1_RX_BUF[USART1_RX_BUF_SIZE]; // 接收缓冲,最大USART1_RX_BUF_SIZE个字节.
-uint16_t USART1_RX_STA = 0;				// 接收状态标记
 
 void USART1_IRQHandler(void)
 {
 	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-		USART1_RX_BUF[USART1_RX_STA++] = USART1->DR & (uint16_t)0x01FF;
-		if (USART1_RX_STA >= USART1_RX_BUF_SIZE)
-			USART1_RX_STA = 0;
+		//  and data is  "[pid:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\n" % (inner_p, inner_i, inner_d, outer_p, outer_i, outer_d))
+		
+		// USART1_RX_BUF[USART1_RX_STA++] = USART1->DR & (uint16_t)0x01FF;
+		// if (USART1_RX_STA >= USART1_RX_BUF_SIZE)
+		// 	USART1_RX_STA = 0;
+		static int ptr = 0;
+		static int USART1_RX_STA = 0;
+		char ch = USART1->DR & (uint16_t)0x01FF;
+		if (ptr == 0)
+		{
+			if (ch == '[') ptr++;
+		}
+		else if (ptr == 1) 
+		{
+			if (ch == 'p') ptr++;
+			else ptr = 0;
+		}
+		else if (ptr == 2) 
+		{
+			if (ch == 'i') ptr++;
+			else ptr = 0;
+		}
+		else if (ptr == 3) 
+		{
+			if (ch == 'd') ptr++;
+			else ptr = 0;
+		}
+		else if (ptr == 4) 
+		{
+			if (ch == ':') ptr++;
+			else {
+				ptr = 0;
+				USART1_RX_STA = 0;
+			}
+		}
+		else
+		{
+			if (ch == ']')
+			{
+				USART1_RX_BUF[USART1_RX_STA] = '\0';
+				ptr = 0;
+			}
+			else
+			{
+				USART1_RX_BUF[USART1_RX_STA] = ch;
+				USART1_RX_STA++;
+			}
+		}
 	}
 }
 

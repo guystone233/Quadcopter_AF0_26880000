@@ -19,7 +19,7 @@ void ReadString(char *ch);
 
 char *ToString(int iVal);
 
-#define USART1_RX_BUF_SIZE 256				// 接收缓冲区大小
+#define USART1_RX_BUF_SIZE 50				// 接收缓冲区大小
 extern char USART1_RX_BUF[USART1_RX_BUF_SIZE];
 
 

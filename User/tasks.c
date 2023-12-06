@@ -58,7 +58,7 @@ float outer_read_pitch = 0.0f;
 float outer_read_yaw = 0.0f;
 
 // int8_t data[18] = {0};
-int8_t data[30] = {0};
+char data[USART1_RX_BUF_SIZE] = {0};
 
 /* Delay */
 INT16U Task1000HZDelay = 50;
@@ -240,26 +240,7 @@ void SendTask()
 void ReceiveTask() {
 	INT32U tick1 = OSTimeGet();
 
-	// data have been received in USART1_RX_BUF
-	//  and data is  "[pid:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\n" % (inner_p, inner_i, inner_d, outer_p, outer_i, outer_d))
-	// need to parse the data and update the pid parameters
-
-
-	int i = 0;
-	while (USART1_RX_BUF[i] != '\0') {
-		if (USART1_RX_BUF[i] == '[') {
-			i += 5;
-			int j = 0;
-			while (USART1_RX_BUF[i] != ']') {
-				data[j] = USART1_RX_BUF[i];
-				i++;
-				j++;
-			}
-			data[j] = '\0';
-			break;
-		}
-		i++;
-	}
+	strcpy(data, USART1_RX_BUF);
 
 	char *p = strtok(data, ";");
 	int k = 0;
@@ -470,9 +451,9 @@ void OuterLoopTask()
 	// outer_rx_roll = (float) ((ppm_CCR1data[1] -1523.0f)/503.0f *45.0f); // >1523: roll right; <1523: roll left
 	// outer_rx_updown = (float)((ppm_CCR1data[3] - 1017.0f)/1009.0f *100.0f);
 
-	outer_read_roll = (float) ((ano_data_euler -> data[0] + (ano_data_euler -> data[1] << 8))/100.0f);
-	outer_read_pitch = (float) ((ano_data_euler -> data[2] + (ano_data_euler -> data[3] << 8))/100.0f);
-	outer_read_yaw = (float) ((ano_data_euler -> data[4] + (ano_data_euler -> data[5] << 8))/100.0f);
+	outer_read_roll = (float) ((ANO_data1.data[0] + (ANO_data1.data[1] << 8))/100.0f);
+	outer_read_pitch = (float) ((ANO_data1.data[2] + (ANO_data1.data[3] << 8))/100.0f);
+	outer_read_yaw = (float) ((ANO_data1.data[4] + (ANO_data1.data[5] << 8))/100.0f);
 
 	// pitch forward: 0~-180; pitch backward: 0~180
 	// roll left: 0~-180; roll right: 0~180
