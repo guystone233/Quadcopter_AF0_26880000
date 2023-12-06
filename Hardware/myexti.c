@@ -22,7 +22,7 @@ void exti_Init(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
  
-  /* Connect EXTI Line0 to PA0 pin */
+  /* Connect EXTI Line0 to PA1 pin */
   SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource1);
  
   /* Configure EXTI Line0 */

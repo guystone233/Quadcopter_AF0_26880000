@@ -14,10 +14,12 @@ void InitTask(void *p_arg);
 int main(void)
 {
 	OS_CPU_SysTickInitFreq(84000000);
-
+	GY86_Init();
 	USARTInit();
 	OSInit();
-
+	exti_Init();
+	mpu6050_init();
+	Tim_Init();
 	OSTaskCreate(InitTask, NULL, &InitTaskStk[799], 1);
 
 	OSStart();
@@ -27,15 +29,14 @@ int main(void)
 
 void InitTask(void *p_arg)
 {
-	Tim_Init();
 
-	GY86_Init();
+
+
 
 	// OLED_Init();
-	MotorInit();
+	// MotorInit();
 	// LED_Init();
-	exti_Init();
-	mpu6050_init();
+
 	// ekf_init();
 
 	// int16_t accx_read_list[100] = {0}, accy_read_list[100] = {0}, accz_read_list[100] = {0};
