@@ -9,8 +9,6 @@ float Pitch,Roll,Yaw;
 long Temp;
 ANO_data_euler ANO_data1;
 
-// int8_t data[18] = {0};
-int8_t data[20] = {0};
 
 float inner_kp = 0.1f;
 float inner_ki = 0.0f;

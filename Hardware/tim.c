@@ -1,13 +1,13 @@
       
 #include "tim.h"
-//#include "delay.h"
+#include "delay.h"
 
 #define MotorLockOn 1
 #define MotorLockOff 0
 #define pulseWidth 20000
 // 定义全局变量，存储接收到的PPM数据
-uint16_t ppmData[7], ppm_CCR1data[7];
-uint16_t dutyCycleArray[7];
+ uint16_t ppmData[7], ppm_CCR1data[7];
+ uint16_t dutyCycleArray[7];
 
 uint8_t LockStatus = 0;
 uint8_t psc = 84 - 1;
@@ -115,6 +115,42 @@ void TIM1_PWM_Init(void)
     TIM1->CR1 |= 1 << 7; // 自动重载预装载使能
 }
 
+//配置TIM2用于PWM输出，引脚为PA0
+void TIM2_PWM_Init(void)
+{
+    // 使能TIM2时钟
+    RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
+    // 配置GPIO引脚
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+
+    GPIOA->OSPEEDR |= 0x00000003;
+    GPIOA->MODER |= GPIO_MODER_MODER0_1;
+    GPIOA->OTYPER |= 0x00000001;
+
+    GPIOA->AFR[0] |= 0x00000001;
+
+    // 配置TIM2基本参数
+    TIM2->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
+    TIM2->ARR = 3200 - 1; // PWM周期为20ms
+
+    // 配置TIM2通道1为PWM输出模式
+    // OC1设置PWM1模式
+    TIM2->CCMR1 |= 6 << 4;
+    // 使能预装载寄存器
+    TIM2->CCMR1 |= 0x6868;
+
+    TIM2->CCER |= TIM_CCER_CC1E;
+    //	TIM1->CCER|=~(1<<1);
+
+    // 初始化所有寄存器
+    TIM2->EGR |= 1 << 0;
+
+    // 启动TIM2
+    TIM2->CR1 |= TIM_CR1_CEN;
+    TIM2->CR1 |= 1 << 7; // 自动重载预装载使能
+}
+
 // 配置TIM3用于PPM输入捕获
 void TIM3_PPM_Init(void)
 {
@@ -176,23 +212,21 @@ uint16_t calculateDutyCycle(uint16_t period)
 }
 
 // 设置PWM输出占空比
-void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle)
+void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t CCR)
 {
-//    uint16_t pulse = (dutyCycle * (TIMx->ARR + 1)) / 100;
-    uint16_t pulse = dutyCycle;
     switch (channel)
     {
     case 1:
-        TIMx->CCR1 = pulse;
+        TIMx->CCR1 = CCR;
         break;
     case 2:
-        TIMx->CCR2 = pulse;
+        TIMx->CCR2 = CCR;
         break;
     case 3:
-        TIMx->CCR3 = pulse;
+        TIMx->CCR3 = CCR;
         break;
     case 4:
-        TIMx->CCR4 = pulse;
+        TIMx->CCR4 = CCR;
         break;
     default:
         break;
@@ -204,38 +238,17 @@ void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle)
 
 void PWM_output(void)
 {
-		LockStatus = CheckMotorLock();  
+		LockStatus = CheckMotorLock();
 #ifdef MOTOR_INIT
 		MotorInit();
 #endif
 		
     StoreDutyCycle(dutyCycleArray, ppm_CCR1data);
-
     if(!LockStatus)
     {
-        SendString("Motor is UnLocked!\r\n");
-        // for(uint8_t i = 1; i < 5; i++)
-        // {
-        //     setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
-        // }
-        // 1100: 0%; 1940: 100%
-        int offset = 0.1;
-        int out1 = 1100 + motor1 * 8.4 * offset;
-        int out2 = 1100 + motor2 * 8.4 * offset;
-        int out3 = 1100 + motor3 * 8.4 * offset;
-        int out4 = 1100 + motor4 * 8.4 * offset;
-        setPWMDutyCycle(TIM1, 1, out1);
-        setPWMDutyCycle(TIM1, 2, out2);
-        setPWMDutyCycle(TIM1, 3, out3);
-        setPWMDutyCycle(TIM1, 4, out4);
-    }
-    else
-    {
-        SendString("Motor is Locked!\r\n");
         for(uint8_t i = 1; i < 5; i++)
         {
-            for(uint16_t j = 0; j < 1000; j++);
-            setPWMDutyCycle(TIM1, i, 1100);
+            setPWMDutyCycle(TIM1, i, ppm_CCR1data[i]);
         }
     }
 }
@@ -260,7 +273,6 @@ void MotorInit(void)
 			}
 		}
 	}
-    
 }
 
 void StoreDutyCycle(uint16_t *dutyCycleArray, uint16_t *ppm_CCR1data)
@@ -277,7 +289,7 @@ uint8_t CheckMotorLock(void)
 		{
 			LockStatus = 1;
 			return MotorLockOff;
-		}      
+		}
     if((dutyCycleArray[5] == 5))
 		{
 				LockStatus = 0;
@@ -292,10 +304,11 @@ uint8_t CheckMotorInit(void)
 			return 1;
 		}
 		else return 0;
-}	
+}
 void Tim_Init()
 {
     TIM1_PWM_Init();
+    TIM2_PWM_Init();
     TIM3_PPM_Init();
     
 }

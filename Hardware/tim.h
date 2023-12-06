@@ -4,11 +4,11 @@
 #include "stm32f4xx.h"
 #include "os_cpu.h"
 #include "ucos_ii.h"
-#include "tasks.h"
 
 void Tim_Init();
 void TIM3_PPM_Init(void);
 void TIM1_PWM_Init(void);
+void TIM2_PWM_Init(void);
 void MotorInit(void);
 uint8_t CheckMotorLock(void);
 void TIM3_IRQHandler(void);

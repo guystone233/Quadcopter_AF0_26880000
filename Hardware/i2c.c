@@ -284,28 +284,6 @@ int I2C1_Write_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, uint
     return 0;
 }
 
-void I2C1_Write_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, int8_t *data, uint8_t size)
-{
-    I2C1_CheckBUSY();
-
-    I2C1_SendStart(ENABLE);
-    EV5();
-
-    I2C1_Write7bitAddr(DeviceAddr, Transmitter);
-    EV6("MASTER_TRANSMITTER_MODE");
-
-    I2C1_SendData(RegisterAddr);
-    EV8_2();
-
-    for (int i = 0; i < size; i++)
-    {
-        I2C1_SendData(data[i]);
-        EV8_2();
-    }
-
-    I2C1_SendStop(ENABLE);
-}
-
 /* @brief
  * - I2C1_CheckBUSY: BUSY flag
  * - EV5: BUSY, MSL and SB flag
