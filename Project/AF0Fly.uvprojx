@@ -10,7 +10,7 @@
       <TargetName>Target 1</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060960::V5.06 update 7 (build 960)::.\ARM_Compiler_5.06u7</pCCUsed>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -184,9 +184,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>2</RvdsVP>
-            <RvdsMve>0</RvdsMve>
-            <RvdsCdeCp>0</RvdsCdeCp>
-            <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -327,7 +324,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
             <v6LangP>5</v6LangP>
@@ -338,7 +334,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32F401xx, USE_STDPERIPH_DRIVER, ARM_MATH_CM4</Define>
+              <Define>STM32F401xx, USE_STDPERIPH_DRIVER, ARM_MATH_CM4,MPL_LOG_NDEBUG=1,MPU6050,EMPL,USE_DMP,EMPL_TARGET_STM32F4</Define>
               <Undefine></Undefine>
               <IncludePath>..\User;..\Lib\inc;..\Hardware;..\Ucosii\Source;..\Ucosii\Cfg\Template;..\Ucosii\Ports;..\Ucosii\Trace</IncludePath>
             </VariousControls>
@@ -353,7 +349,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>1</ClangAsOpt>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -791,7 +787,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -852,7 +847,6 @@
                     <uThumb>2</uThumb>
                     <uSurpInc>2</uSurpInc>
                     <uC99>2</uC99>
-                    <uGnu>2</uGnu>
                     <useXO>2</useXO>
                     <v6Lang>0</v6Lang>
                     <v6LangP>0</v6LangP>
@@ -1017,14 +1011,14 @@
               <FilePath>..\Hardware\tim.h</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Hardware\usart.c</FilePath>
-            </File>
-            <File>
               <FileName>usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Hardware\usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\usart.c</FilePath>
             </File>
             <File>
               <FileName>gy86.c</FileName>
@@ -1045,6 +1039,16 @@
               <FileName>i2c.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\Hardware\i2c.h</FilePath>
+            </File>
+            <File>
+              <FileName>myexti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Hardware\myexti.c</FilePath>
+            </File>
+            <File>
+              <FileName>myexti.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Hardware\myexti.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1164,6 +1168,271 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>DMP</GroupName>
+          <Files>
+            <File>
+              <FileName>dmpKey.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\dmpKey.h</FilePath>
+            </File>
+            <File>
+              <FileName>dmpmap.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\dmpmap.h</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\inv_mpu.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\inv_mpu.h</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>inv_mpu_dmp_motion_driver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\inv_mpu_dmp_motion_driver.h</FilePath>
+            </File>
+            <File>
+              <FileName>accel_auto_cal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\accel_auto_cal.h</FilePath>
+            </File>
+            <File>
+              <FileName>compass_vec_cal.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\compass_vec_cal.h</FilePath>
+            </File>
+            <File>
+              <FileName>data_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\data_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_builder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\data_builder.h</FilePath>
+            </File>
+            <File>
+              <FileName>eMPL_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\eMPL_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>eMPL_outputs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\eMPL_outputs.h</FilePath>
+            </File>
+            <File>
+              <FileName>fast_no_motion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\fast_no_motion.h</FilePath>
+            </File>
+            <File>
+              <FileName>fusion_9axis.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\fusion_9axis.h</FilePath>
+            </File>
+            <File>
+              <FileName>gyro_tc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\gyro_tc.h</FilePath>
+            </File>
+            <File>
+              <FileName>hal_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\hal_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_outputs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\hal_outputs.h</FilePath>
+            </File>
+            <File>
+              <FileName>heading_from_gyro.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\heading_from_gyro.h</FilePath>
+            </File>
+            <File>
+              <FileName>inv_math.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\inv_math.h</FilePath>
+            </File>
+            <File>
+              <FileName>invensense.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\invensense.h</FilePath>
+            </File>
+            <File>
+              <FileName>invensense_adv.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\invensense_adv.h</FilePath>
+            </File>
+            <File>
+              <FileName>libmpllib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\DMP\libmpllib.lib</FilePath>
+            </File>
+            <File>
+              <FileName>log.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\log.h</FilePath>
+            </File>
+            <File>
+              <FileName>log_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\log_stm32.c</FilePath>
+            </File>
+            <File>
+              <FileName>mag_disturb.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mag_disturb.h</FilePath>
+            </File>
+            <File>
+              <FileName>message_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\message_layer.c</FilePath>
+            </File>
+            <File>
+              <FileName>message_layer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\message_layer.h</FilePath>
+            </File>
+            <File>
+              <FileName>ml_math_func.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\ml_math_func.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml_math_func.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\ml_math_func.h</FilePath>
+            </File>
+            <File>
+              <FileName>mlinclude.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mlinclude.h</FilePath>
+            </File>
+            <File>
+              <FileName>mlmath.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\mlmath.c</FilePath>
+            </File>
+            <File>
+              <FileName>mlmath.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mlmath.h</FilePath>
+            </File>
+            <File>
+              <FileName>mlos.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mlos.h</FilePath>
+            </File>
+            <File>
+              <FileName>mltypes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mltypes.h</FilePath>
+            </File>
+            <File>
+              <FileName>motion_no_motion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\motion_no_motion.h</FilePath>
+            </File>
+            <File>
+              <FileName>mpl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\mpl.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpl.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mpl.h</FilePath>
+            </File>
+            <File>
+              <FileName>mpu6050.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\mpu6050.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu6050.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mpu6050.h</FilePath>
+            </File>
+            <File>
+              <FileName>no_gyro_fusion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\no_gyro_fusion.h</FilePath>
+            </File>
+            <File>
+              <FileName>packet.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\packet.h</FilePath>
+            </File>
+            <File>
+              <FileName>quaternion_supervisor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\quaternion_supervisor.h</FilePath>
+            </File>
+            <File>
+              <FileName>results_holder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\results_holder.c</FilePath>
+            </File>
+            <File>
+              <FileName>results_holder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\results_holder.h</FilePath>
+            </File>
+            <File>
+              <FileName>start_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\start_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>start_manager.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\start_manager.h</FilePath>
+            </File>
+            <File>
+              <FileName>stdint_invensense.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\stdint_invensense.h</FilePath>
+            </File>
+            <File>
+              <FileName>mpu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\mpu.h</FilePath>
+            </File>
+            <File>
+              <FileName>storage_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\storage_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_manager.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\storage_manager.h</FilePath>
+            </File>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\DMP\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>delay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\DMP\delay.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
@@ -1179,14 +1448,14 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="CMSIS" Cgroup="DSP" Cvariant="Source" Cvendor="ARM" Cversion="1.14.2" condition="CMSISCORE">
-        <package name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.2"/>
+      <component Cclass="CMSIS" Cgroup="DSP" Cvariant="Source" Cvendor="ARM" Cversion="1.14.4" condition="CMSISCORE">
+        <package license="LICENSE.txt" name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.4"/>
         <targetInfos>
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
-      <component Cclass="CMSIS" Cgroup="DSP" Csub="Compute Graph Static Flow" Cvendor="ARM" Cversion="1.14.2" condition="CMSISDSPLIB">
-        <package name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.2"/>
+      <component Cclass="CMSIS" Cgroup="DSP" Csub="Compute Graph" Cvendor="ARM" Cversion="1.14.4" condition="CMSISDSPLIB">
+        <package license="LICENSE.txt" name="CMSIS-DSP" schemaVersion="1.7.7" url="https://www.keil.com/pack/" vendor="ARM" version="1.14.4"/>
         <targetInfos>
           <targetInfo name="Target 1"/>
         </targetInfos>
@@ -1194,14 +1463,5 @@
     </components>
     <files/>
   </RTE>
-
-  <LayerInfo>
-    <Layers>
-      <Layer>
-        <LayName>AF0Fly</LayName>
-        <LayPrjMark>1</LayPrjMark>
-      </Layer>
-    </Layers>
-  </LayerInfo>
 
 </Project>

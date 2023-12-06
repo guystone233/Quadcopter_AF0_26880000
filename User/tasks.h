@@ -15,7 +15,8 @@
 #include "ano.h"
 #include "ekf.h"
 
-extern int dutyCycleArray[6];
+extern uint16_t dutyCycleArray[7];
+extern uint16_t ppm_CCR1data[7];
 
 /* Task Stacks */
 extern OS_STK Task1000HZStk[];
@@ -46,6 +47,7 @@ void GY86Task();
 void KalmanTask();
 void SendTask();
 void OLEDTask();
+void ReceiveTask();
 // void GY86Task(void *p_arg);
 // void KalmanTask(void *p_arg);
 // void SendTask(void *p_arg);
@@ -64,6 +66,32 @@ void OuterLoopTask();
 void BlinkTask();
 // void OuterLoopTask(void *p_arg);
 // void BlinkTask(void *p_arg);
+
+extern float outer_kp;
+extern float outer_ki;
+extern float outer_kd;
+
+extern float outer_pitch_integrator;
+extern float outer_roll_integrator;
+
+extern float outer_pitch_lasterror;
+extern float outer_roll_lasterror;
+
+extern float outer_pitch_output;
+extern float outer_roll_output;
+
+extern float inner_kp;
+extern float inner_ki;
+extern float inner_kd;
+
+extern float rx_updown;
+
+extern float motor1;
+extern float motor2;
+extern float motor3;
+extern float motor4;
+
+
 
 
 #endif /* TASKS */

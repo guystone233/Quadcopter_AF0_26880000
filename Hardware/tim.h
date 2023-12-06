@@ -8,11 +8,14 @@
 void Tim_Init();
 void TIM3_PPM_Init(void);
 void TIM1_PWM_Init(void);
+void TIM2_PWM_Init(void);
+void MotorInit(void);
+uint8_t CheckMotorLock(void);
 void TIM3_IRQHandler(void);
-int16_t calculateDutyCycle(uint16_t pulseWidth, uint16_t period);
-void setPWMDutyCycle(TIM_TypeDef *TIMx, uint32_t channel, uint16_t dutyCycle);
+uint16_t calculateDutyCycle(uint16_t period);
+void setPWMDutyCycle(TIM_TypeDef *TIMx, uint16_t channel, uint16_t dutyCycle);
 void PWM_output(void);
-void storeDutyCycle(int dutyCycle1, int dutyCycle2, int dutyCycle3, int dutyCycle4, int dutyCycle5, int dutyCycle6);
+uint8_t CheckMotorInit(void);
+void StoreDutyCycle(uint16_t *dutyCycleArray, uint16_t *ppm_CCR1data);
 
-void Motor_Init();
 #endif /* TIM */

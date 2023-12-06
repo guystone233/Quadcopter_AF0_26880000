@@ -25,27 +25,29 @@ void GPIOB_I2C1_Init(uint8_t scl, uint8_t sda)
 void GY86_Init(void)
 {
     I2C1_Init();
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_PWR_MGMT_1, 0x00);
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_PWR_MGMT_2, 0x00);
-    /*DLPF_CFG=0*/
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_CONFIG, 0x06);
-    /*Sample rate is 1KHz now*/
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_SMPRT_DIV, 0x07);
-    /*Gyro Scale is from -1000°/s to +1000°/s*/
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_CONFIG, 0x18);
-    /*ACCEL Scale is from -8g to +8g*/
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_ACCEL_CONFIG, 0x18);
-    /*Disable FIFO*/
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_FIFO_EN, 0x00);
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, INT_PIN_CFG, 0x02);
-    I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_USER_CTRL, 0x00);
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_PWR_MGMT_1, 0x00);
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_PWR_MGMT_2, 0x00);
+    // /*DLPF_CFG=0*/
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_CONFIG, 0x06);
+    // /*Sample rate is 1KHz now*/
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_SMPRT_DIV, 0x07);
+    // /*Gyro Scale is from -1000°/s to +1000°/s*/
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_GYRO_CONFIG, 0x18);
+    // /*ACCEL Scale is from -8g to +8g*/
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_ACCEL_CONFIG, 0x18);
+    // /*Disable FIFO*/
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_FIFO_EN, 0x00);
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, INT_PIN_CFG, 0x02);
+    // I2C1_Write_1Byte_Register(MPU6050_ADDR, MPU6050_USER_CTRL, 0x00);
+#ifdef GY86
     HMC5883Init();
+#endif
 }
 
 void HMC5883Init(void)
 {
     I2C1_Write_1Byte_Register(AddressHMC5883, ConfigA, 0x19);      // Outout rate : 75Hz
-    I2C1_Write_1Byte_Register(AddressHMC5883, ConfigB, 0x20);      // Gain : 1.3Ga
+    I2C1_Write_1Byte_Register(AddressHMC5883, ConfigB, 0x00);      // Gain : 1.3Ga
     I2C1_Write_1Byte_Register(AddressHMC5883, ModeRegister, 0x00); // Continuous-Measurement Mode
     // StatusRegister = 0x01 when data prepared
 }
@@ -156,7 +158,9 @@ uint16_t I2C1_GetMagZ(void)
 
 void I2C1_GetAll(int8_t *data)
 {
-    I2C1_Read_multiByte_Register(MPU6050_ADDR, MPU6050_ACCEL_XOUT_H, data, 14);
+//     I2C1_Read_multiByte_Register(MPU6050_ADDR, MPU6050_ACCEL_XOUT_H, data, 14);
     // I2C1_Read_multiByte_Register(MPU6050_ADDR, MPU6050_GYRO_XOUT_H, data + 6, 6);
+#ifdef GY86
     I2C1_Read_multiByte_Register(HMC5883_Addr, OutputXMSB, data + 12, 6);
+#endif
 }

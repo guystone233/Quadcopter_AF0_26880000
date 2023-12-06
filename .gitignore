@@ -5,3 +5,5 @@ Project/DebugConfig
 Project/AF0Fly.uvguix.*
 Project/*.scvd
 .vscode/settings.json
+Project/.vscode
+.gitignore
