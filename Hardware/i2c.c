@@ -224,7 +224,7 @@ uint16_t I2C1_Read_2Byte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr)
     return data;
 }
 
-void I2C1_Read_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, int8_t *data, uint8_t size)
+int I2C1_Read_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t size, uint8_t *data)
 {
     // I2C1_SendACK(ENABLE);
     // I2C1_SendStop(DISABLE);
@@ -258,6 +258,30 @@ void I2C1_Read_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, int8
 
     I2C1_SendStop(ENABLE);
     I2C1_SendACK(DISABLE);
+    return 0;
+}
+
+int I2C1_Write_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_t size, uint8_t *data)
+{
+    I2C1_CheckBUSY();
+
+    I2C1_SendStart(ENABLE);
+    EV5();
+
+    I2C1_Write7bitAddr(DeviceAddr, Transmitter);
+    EV6("MASTER_TRANSMITTER_MODE");
+
+    I2C1_SendData(RegisterAddr);
+    EV8_2();
+
+    for (int i = 0; i < size; i++)
+    {
+        I2C1_SendData(data[i]);
+        EV8_2();
+    }
+
+    I2C1_SendStop(ENABLE);
+    return 0;
 }
 
 void I2C1_Write_multiByte_Register(uint8_t DeviceAddr, uint8_t RegisterAddr, int8_t *data, uint8_t size)

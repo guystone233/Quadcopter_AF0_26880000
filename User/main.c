@@ -27,43 +27,35 @@ int main(void)
 
 void InitTask(void *p_arg)
 {
-	Tim_Init();
+	// Tim_Init();
 
 	GY86_Init();
 
-	OLED_Init();
-	MotorInit();
-	LED_Init();
-	ekf_init();
-	// int16_t MAG_OFFSET_X = 0, MAG_OFFSET_Y = 0, MAG_OFFSET_Z = 0;
-	int16_t accx_read_list[100] = {0}, accy_read_list[100] = {0}, accz_read_list[100] = {0};
-	int16_t gyrox_read_list[100] = {0}, gyroy_read_list[100] = {0}, gyroz_read_list[100] = {0};
-	int16_t magx_read_list[100] = {0}, magy_read_list[100] = {0}, magz_read_list[100] = {0};
-	for (int i = 0; i < 100; i++) {
-		GY86Task();
-		accx_read_list[i] = -accx_read;
-		accy_read_list[i] = -accy_read;
-		accz_read_list[i] = -(accz_read-2048);
-		gyrox_read_list[i] = gyrox_read;
-		gyroy_read_list[i] = gyroy_read;
-		gyroz_read_list[i] = gyroz_read;
-		magx_read_list[i] = magx_read;
-		magy_read_list[i] = magy_read;
-		magz_read_list[i] = magz_read;
-	}
-	// arm_mean_q15(accx_read_list, 100, &ACC_OFFSET_X);
-	// arm_mean_q15(accy_read_list, 100, &ACC_OFFSET_Y);
-	// arm_mean_q15(accz_read_list, 100, &ACC_OFFSET_Z);
-	arm_mean_q15(gyrox_read_list, 100, &GYRO_OFFSET_X);
-	arm_mean_q15(gyroy_read_list, 100, &GYRO_OFFSET_Y);
-	arm_mean_q15(gyroz_read_list, 100, &GYRO_OFFSET_Z);
-	arm_mean_q15(magx_read_list, 100, &MAG_OFFSET_X);
-	arm_mean_q15(magy_read_list, 100, &MAG_OFFSET_Y);
-	arm_mean_q15(magz_read_list, 100, &MAG_OFFSET_Z);
-	// USART1_printf("MAG_OFFSET_X = %d\n", MAG_OFFSET_X);
-	// USART1_printf("MAG_OFFSET_Y = %d\n", MAG_OFFSET_Y);
-	// USART1_printf("MAG_OFFSET_Z = %d\n", MAG_OFFSET_Z);
-	// ACC_OFFSET_Z = 0;
+	// OLED_Init();
+	// MotorInit();
+	// LED_Init();
+	exti_Init();
+	mpu6050_init();
+	// ekf_init();
+
+	// int16_t accx_read_list[100] = {0}, accy_read_list[100] = {0}, accz_read_list[100] = {0};
+	// int16_t gyrox_read_list[100] = {0}, gyroy_read_list[100] = {0}, gyroz_read_list[100] = {0};
+	// for (int i = 0; i < 100; i++) {
+	// 	GY86Task();
+	// 	accx_read_list[i] = -accx_read;
+	// 	accy_read_list[i] = -accy_read;
+	// 	accz_read_list[i] = -(accz_read-2048);
+	// 	gyrox_read_list[i] = gyrox_read;
+	// 	gyroy_read_list[i] = gyroy_read;
+	// 	gyroz_read_list[i] = gyroz_read;
+	// }
+	// // arm_mean_q15(accx_read_list, 100, &ACC_OFFSET_X);
+	// // arm_mean_q15(accy_read_list, 100, &ACC_OFFSET_Y);
+	// // arm_mean_q15(accz_read_list, 100, &ACC_OFFSET_Z);
+	// arm_mean_q15(gyrox_read_list, 100, &GYRO_OFFSET_X);
+	// arm_mean_q15(gyroy_read_list, 100, &GYRO_OFFSET_Y);
+	// arm_mean_q15(gyroz_read_list, 100, &GYRO_OFFSET_Z);
+	// // ACC_OFFSET_Z = 0;
 
 
 

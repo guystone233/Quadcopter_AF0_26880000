@@ -5,6 +5,12 @@ int16_t gyrox_read = 0, gyroy_read = 0, gyroz_read = 0;
 int16_t magx_read = 0, magy_read = 0, magz_read = 0;
 int16_t tmp = 0;
 
+float Pitch,Roll,Yaw;
+long Temp;
+ANO_data_euler ANO_data1;
+
+// int8_t data[18] = {0};
+int8_t data[20] = {0};
 
 float inner_kp = 0.1f;
 float inner_ki = 0.0f;
@@ -120,7 +126,7 @@ void Task1000HZ(void *p_arg)
 {
 	while (1)
 	{
-		GY86Task();
+		// GY86Task();
 		KalmanTask();
 		MotorTask();
         SendTask();
@@ -165,10 +171,33 @@ void KalmanTask()
 {
 	INT32U tick1 = OSTimeGet();
 
-	ekf_calculate();
+	// ekf_calculate();
+
+		MPU6050_Get_Euler_Temputer(&Pitch,&Roll,&Yaw,&Temp);
+		// USART1_printf("Pitch : %.4f     ",(float)Pitch );
+		// USART1_printf("Roll : %.4f    ",(float)Roll );
+		// USART1_printf("Yaw : %.4f   \r\n",(float)Yaw );
+		
+		ANO_data1.len = 7;
+		// ano_data_euler -> data[0] = (int16_t)(euler_x*100) & 0xff;
+		// ano_data_euler -> data[1] = ((int16_t)(euler_x*100) >> 8) & 0xff;
+		// ano_data_euler -> data[2] = (int16_t)(euler_y*100) & 0xff;
+		// ano_data_euler -> data[3] = ((int16_t)(euler_y*100) >> 8) & 0xff;
+		// ano_data_euler -> data[4] = (int16_t)(euler_z*100) & 0xff;
+		// ano_data_euler -> data[5] = ((int16_t)(euler_z*100) >> 8) & 0xff;
+		// ano_data_euler -> data[6] = 0;
+		ANO_data1.data[0] = (int16_t)(Pitch*100) & 0xff;
+		ANO_data1.data[1] = ((int16_t)(Pitch*100) >> 8) & 0xff;
+		ANO_data1.data[2] = (int16_t)(-Roll*100) & 0xff;
+		ANO_data1.data[3] = ((int16_t)(-Roll*100) >> 8) & 0xff;
+		ANO_data1.data[4] = (int16_t)(-Yaw*100) & 0xff;
+		ANO_data1.data[5] = ((int16_t)(-Yaw*100) >> 8) & 0xff;
+		ANO_data1.data[6] = 0;
+		FANO_Send_Data(Frame_EulerAngle,(uint8_t *) &ANO_data1);
 
 	INT32U tick2 = OSTimeGet();
 	kalman_time = tick2 - tick1;
+	// USART1_printf("time : %d\r\n",kalman_time);
 }
 
 void SendTask()
