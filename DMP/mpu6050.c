@@ -278,12 +278,12 @@ void gyro_data_ready_cb(void)
 // 			gyro_data_ready_cb();
 // 		}
 // }
-void EXTI0_IRQHandler(void)
+void EXTI1_IRQHandler(void)
 {
-	if(EXTI_GetITStatus(EXTI_Line0) != RESET) { // 确保产生了EXTI0线中断
+	if(EXTI_GetITStatus(EXTI_Line1) != RESET) { // 确保产生了EXTI1线中断
     gyro_data_ready_cb();
     // 清除中断标志位
-    EXTI_ClearITPendingBit(EXTI_Line0);
+    EXTI_ClearITPendingBit(EXTI_Line1);
   }
 }
 
