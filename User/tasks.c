@@ -473,6 +473,9 @@ void OuterLoopTask()
 	outer_pitch_output = outer_kp * diff_pitch + outer_ki * outer_pitch_integrator + outer_kd * (diff_pitch - outer_pitch_lasterror);
 	outer_roll_output = outer_kp * diff_roll + outer_ki * outer_roll_integrator + outer_kd * (diff_roll - outer_roll_lasterror);
 
+	outer_pitch_output = outer_rx_pitch;
+	outer_roll_output = outer_rx_roll;
+
 	outer_pitch_lasterror = diff_pitch;
 	outer_roll_lasterror = diff_roll;
 
