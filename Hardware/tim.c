@@ -273,6 +273,14 @@ void PWM_output(float motor1, float motor2, float motor3, float motor4)
 		// setPWMDutyCycle(TIM1, 3, out4);
         setPWMDutyCycle(TIM2, 1, out2); // PA0 TIM2_CH1
     }
+    else if(LockStatus)
+    {
+        for(uint8_t i = 1; i < 5; i++)
+        {
+            setPWMDutyCycle(TIM1, i, 1100);
+        }
+        setPWMDutyCycle(TIM2, 1, 1100);
+    }
 }
 
 /*用来初始化电机上电后校准步骤*/
