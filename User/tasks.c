@@ -377,9 +377,17 @@ void InnerLoopTask()
 	float diff_roll = outer_roll_output - inner_gyro_roll;
 	float diff_pitch = outer_pitch_output - inner_gyro_pitch;
 
-	if(inner_pitch_integrator < 2000) inner_pitch_integrator += diff_pitch; else inner_pitch_integrator = 2000;
-	// inner_roll_integrator += diff_roll;
-	if(inner_roll_integrator < 2000) inner_roll_integrator += diff_roll; else inner_roll_integrator = 2000;
+	if(inner_pitch_integrator + diff_pitch < 2000 && inner_pitch_integrator + diff_pitch > -2000) {
+		inner_pitch_integrator += diff_pitch;
+	} else {
+		inner_pitch_integrator = inner_pitch_integrator;
+	}
+
+	if(inner_roll_integrator + diff_roll < 2000 && inner_roll_integrator + diff_roll > -2000) {
+		inner_roll_integrator += diff_roll;
+	} else {
+		inner_roll_integrator = inner_roll_integrator;
+	}
 
 	inner_pitch_output = inner_kp * diff_pitch + inner_ki * inner_pitch_integrator + inner_kd * (diff_pitch - inner_pitch_lasterror);
 	inner_roll_output = inner_kp * diff_roll + inner_ki * inner_roll_integrator + inner_kd * (diff_roll - inner_roll_lasterror);
@@ -387,10 +395,10 @@ void InnerLoopTask()
 	inner_pitch_lasterror = diff_pitch;
 	inner_roll_lasterror = diff_roll;
 
-	motor1 = outer_rx_updown + inner_pitch_output + inner_roll_output;
-	motor2 = outer_rx_updown + inner_pitch_output - inner_roll_output;
-	motor3 = outer_rx_updown - inner_pitch_output - inner_roll_output;
-	motor4 = outer_rx_updown - inner_pitch_output + inner_roll_output;
+	motor1 = outer_rx_updown - inner_pitch_output + inner_roll_output;
+	motor2 = outer_rx_updown - inner_pitch_output - inner_roll_output;
+	motor3 = outer_rx_updown + inner_pitch_output - inner_roll_output;
+	motor4 = outer_rx_updown + inner_pitch_output + inner_roll_output;
 
 	
 
@@ -466,9 +474,17 @@ void OuterLoopTask()
 	float diff_pitch = outer_rx_pitch - outer_read_pitch;
 	float diff_yaw = outer_rx_yaw - outer_read_yaw;
 
-	if(outer_pitch_integrator < 2000) outer_pitch_integrator += diff_pitch; else outer_pitch_integrator = 2000;
-	// outer_roll_integrator += diff_roll;
-	if(outer_roll_integrator < 2000) outer_roll_integrator += diff_roll; else outer_roll_integrator = 2000;
+	if((outer_pitch_integrator + diff_pitch) < 2000 && (outer_pitch_integrator + diff_pitch) > -2000) {
+		outer_pitch_integrator += diff_pitch;
+	} else {
+		outer_pitch_integrator = outer_pitch_integrator;
+	}
+	
+	if((outer_roll_integrator + diff_roll) < 2000 && (outer_roll_integrator + diff_roll) > -2000) {
+		outer_roll_integrator += diff_roll;
+	} else {
+		outer_roll_integrator = outer_roll_integrator;
+	}
 
 	outer_pitch_output = outer_kp * diff_pitch + outer_ki * outer_pitch_integrator + outer_kd * (diff_pitch - outer_pitch_lasterror);
 	outer_roll_output = outer_kp * diff_roll + outer_ki * outer_roll_integrator + outer_kd * (diff_roll - outer_roll_lasterror);
