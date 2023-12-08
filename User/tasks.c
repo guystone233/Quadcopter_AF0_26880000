@@ -127,7 +127,7 @@ void Task1000HZ(void *p_arg)
 	{
 		// GY86Task();
 		KalmanTask();
-		MotorTask();
+		// MotorTask();
         SendTask();
 		ReceiveTask();
 		// OLEDTask();
@@ -228,6 +228,11 @@ void SendTask()
 	USART1_printf("\r\n[pid:%.2f;%.2f;%.2f;%.2f;%.2f;%.2f]\r\n",
 		inner_kp, inner_ki, inner_kd,
 		outer_kp, outer_ki, outer_kd);
+
+	USART1_printf("\r\n[time:%d;%d;%d;%d;%d;%d\r\n",
+		kalman_time, send_time, receive_time,
+		inner_loop_time, motor_time,
+		outer_loop_time);
 
 	INT32U tick2 = OSTimeGet();
 	send_time = tick2 - tick1;
@@ -360,7 +365,7 @@ void Task500HZ(void *p_arg)
 	while (1)
 	{
 		InnerLoopTask();
-		
+		MotorTask();
 		OSTimeDlyHMSM(0, 0, 0, Task500HZDelay);
 	}
 }
