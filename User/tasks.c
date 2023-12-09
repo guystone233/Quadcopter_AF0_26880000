@@ -62,9 +62,9 @@ float outer_read_yaw = 0.0f;
 char data[USART1_RX_BUF_SIZE] = {0};
 
 /* Delay */
-INT16U Task1000HZDelay = 50;
-INT16U Task500HZDelay = 30;
-INT16U Task250HZDelay = 10;
+INT16U Task1000HZDelay = 10;
+INT16U Task500HZDelay = 6;
+INT16U Task250HZDelay = 1;
 
 // INT16U gy86_delay = 150;
 // INT16U kalman_delay = 145;
@@ -229,7 +229,7 @@ void SendTask()
 		inner_kp, inner_ki, inner_kd,
 		outer_kp, outer_ki, outer_kd);
 
-	USART1_printf("\r\n[time:%d;%d;%d;%d;%d;%d\r\n",
+	USART1_printf("\r\n[time:%d;%d;%d;%d;%d;%d]\r\n",
 		kalman_time, send_time, receive_time,
 		inner_loop_time, motor_time,
 		outer_loop_time);
@@ -479,10 +479,13 @@ void OuterLoopTask()
 	float diff_pitch = outer_rx_pitch - outer_read_pitch;
 	float diff_yaw = outer_rx_yaw - outer_read_yaw;
 
-	if((outer_pitch_integrator + diff_pitch) < 2000 && (outer_pitch_integrator + diff_pitch) > -2000) {
+	if(((outer_pitch_integrator+ diff_pitch) < 2000) && ((outer_pitch_integrator+ diff_pitch) > -2000)) {
 		outer_pitch_integrator += diff_pitch;
 	} else {
-		outer_pitch_integrator = outer_pitch_integrator;
+		if((outer_pitch_integrator+ diff_pitch) > 2000)
+		outer_pitch_integrator = 2000;
+		else 
+		outer_pitch_integrator = -2000;
 	}
 	
 	if((outer_roll_integrator + diff_roll) < 2000 && (outer_roll_integrator + diff_roll) > -2000) {
@@ -494,8 +497,8 @@ void OuterLoopTask()
 	outer_pitch_output = outer_kp * diff_pitch + outer_ki * outer_pitch_integrator + outer_kd * (diff_pitch - outer_pitch_lasterror);
 	outer_roll_output = outer_kp * diff_roll + outer_ki * outer_roll_integrator + outer_kd * (diff_roll - outer_roll_lasterror);
 
-	outer_pitch_output = outer_rx_pitch;
-	outer_roll_output = outer_rx_roll;
+	// outer_pitch_output = outer_rx_pitch;
+	// outer_roll_output = outer_rx_roll;
 
 	outer_pitch_lasterror = diff_pitch;
 	outer_roll_lasterror = diff_roll;
