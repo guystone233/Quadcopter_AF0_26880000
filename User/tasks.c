@@ -384,6 +384,11 @@ void InnerLoopTask()
 		inner_gyro_pitch = (float) (imu_data[1] - 65536) * 180.0f / 32768.0f;
 	else
 		inner_gyro_pitch = (float) imu_data[1] * 180.0f / 32768.0f;
+	if(inner_gyro_pitch > 40.0f || inner_gyro_pitch < -40.0f)
+		return;
+	if(inner_gyro_roll > 40.0f || inner_gyro_roll < -40.0f)
+		return;
+
 	// inner_gyro_roll = (float) imu_data[0] * 4000.0f / 65536.0f;
 	// inner_gyro_pitch = (float) imu_data[1] * 4000.0f / 65536.0f;
 
@@ -408,10 +413,10 @@ void InnerLoopTask()
 	inner_pitch_lasterror = diff_pitch;
 	inner_roll_lasterror = diff_roll;
 
-	motor1 = outer_rx_updown - inner_pitch_output + inner_roll_output;
-	motor2 = outer_rx_updown - inner_pitch_output - inner_roll_output;
-	motor3 = outer_rx_updown + inner_pitch_output - inner_roll_output;
-	motor4 = outer_rx_updown + inner_pitch_output + inner_roll_output;
+	motor1 = outer_rx_updown - inner_pitch_output - inner_roll_output;
+	motor2 = outer_rx_updown - inner_pitch_output + inner_roll_output;
+	motor3 = outer_rx_updown + inner_pitch_output + inner_roll_output;
+	motor4 = outer_rx_updown + inner_pitch_output - inner_roll_output;
 
 	
 
