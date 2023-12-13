@@ -90,8 +90,8 @@ void TIM1_PWM_Init(void)
     GPIOA->AFR[1] |= 0x1111;
 
     // 配置TIM1基本参数
-    TIM1->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
-    TIM1->ARR = 3200 - 1; // PWM周期为20ms
+    TIM1->PSC = 84 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
+    TIM1->ARR = 20000 - 1; // PWM周期为20ms
 
     // 配置TIM1通道1~4为PWM输出模式
     // OC1~4设置PWM1模式
@@ -140,8 +140,8 @@ void TIM2_PWM_Init(void)
     // GPIO_Init(GPIOA, &GPIO_InitStructure);
 	// 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_TIM2);
     // 配置TIM2基本参数
-    TIM2->PSC = 100 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
-    TIM2->ARR = 3200 - 1; // PWM周期为20ms
+    TIM2->PSC = 84 - 1;  // 84MHz时钟分频为84，得到1MHz计数频率
+    TIM2->ARR = 20000 - 1; // PWM周期为20ms
 
     // 配置TIM2通道1为PWM输出模式
     // OC1设置PWM1模式

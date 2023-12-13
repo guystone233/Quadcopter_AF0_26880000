@@ -204,9 +204,9 @@ void SendTask()
 	INT32U tick1 = OSTimeGet();
 
 	// FANO_Send_Data(0x01, (uint8_t *)ano_mpu_data);
-	// FANO_Send_MAG(data);
+	// // FANO_Send_MAG(data);
 	// FANO_Send_Data(Frame_Quaternion, (uint8_t *)ano_data);
-	//FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
+	// FANO_Send_Data(Frame_EulerAngle, (uint8_t *)ano_data_euler);
 	// char out[100];
 	// sprintf(out, "\r\n[chan:%d;%d;%d;%d;%d;%d]\r\n", ppm_CCR1data[1], ppm_CCR1data[2], ppm_CCR1data[3], ppm_CCR1data[4], ppm_CCR1data[5], ppm_CCR1data[6]);
 	// SendString(out);
@@ -470,10 +470,10 @@ void OuterLoopTask()
 	}
 	else
 	{
-		outer_rx_yaw = (float) ((ppm_CCR1data[4] - 1515.0f)/505.0f *100.0f); // >1515: yaw right; <1515: yaw left
-		outer_rx_pitch = - (float) ((ppm_CCR1data[2] - 1523.0f)/503.0f *45.0f); // >1523: pitch forward; <1523: pitch backward
-		outer_rx_roll = (float) ((ppm_CCR1data[1] -1523.0f)/503.0f *45.0f); // >1523: roll right; <1523: roll left
-		outer_rx_updown = (float)((ppm_CCR1data[3] - 1017.0f)/1009.0f *100.0f);
+		outer_rx_yaw = (float) ((ppm_CCR1data[4] - 1516.0f)/505.0f *100.0f); // >1515: yaw right; <1515: yaw left
+		outer_rx_pitch = - (float) ((ppm_CCR1data[2] - 1502.0f)/498.0f *45.0f); // >1523: pitch forward; <1523: pitch backward
+		outer_rx_roll = (float) ((ppm_CCR1data[1] -1523.0f)/504.0f *45.0f); // >1523: roll right; <1523: roll left
+		outer_rx_updown = (float)((ppm_CCR1data[3] - 1022.0f)/1002.0f *100.0f); // 100%
 	}
 	// outer_rx_yaw = (float) ((ppm_CCR1data[4] - 1515.0f)/505.0f *100.0f); // >1515: yaw right; <1515: yaw left
 	// outer_rx_pitch = - (float) ((ppm_CCR1data[2] - 1523.0f)/503.0f *45.0f); // >1523: pitch forward; <1523: pitch backward
